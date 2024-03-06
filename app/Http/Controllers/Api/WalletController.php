@@ -69,17 +69,10 @@ class WalletController extends Controller
         $profits['today_profit'] = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->sum('fact_profits');
         $profits['all_profit'] = MicroOrder::where('user_id', $user_id)->sum('fact_profits');
         $profit = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->where('profit_result', '>', 0)->count();
-        $loss = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->where('profit_result', '<', 0)->count();
-        if($profit > 0 && $loss == 0){
-            $profits['profit_margin'] = '100.00';
-        }elseif($profit == 0 && $loss > 0){
-            $profits['profit_margin'] = '0.00';
-        }elseif($profit == 0 && $loss == 0){
-            $profits['profit_margin'] = '0.00';
-        }else{
-            $profits['profit_margin'] = $profit / ($loss + $profit) * 100;
+        $allnum = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->count();
+        if($profit > 0){
+            $profits['profit_margin'] = $profit / $allnum * 100;
         }
-        
         
         $legal_wallet['balance'] = UsersWallet::where('user_id', $user_id)
             ->where('legal_balance', '>=', $zeroFlag)
