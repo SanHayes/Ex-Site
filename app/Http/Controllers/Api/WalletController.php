@@ -21,6 +21,7 @@ use App\Address;
 use App\AccountLog;
 use App\Setting;
 use App\Users;
+use App\MicroOrder;
 use App\UsersWallet;
 use App\UsersWalletOut;
 use App\WalletLog;
@@ -60,6 +61,17 @@ class WalletController extends Controller
         if (empty($user_id)) {
             return $this->error('参数错误');
         }
+        $profits = [
+            'today_profit' => 0,
+            'all_profit' => 0,
+            'profit_margin' => 0
+        ];
+        $profits['today_profit'] = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->sum('fact_profits');
+        $profits['all_profit'] = MicroOrder::where('user_id', $user_id)->sum('fact_profits');
+        $profit = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->where('profit_result', '>', 0)->count();
+        $loss = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->where('profit_result', '<', 0)->count();
+        $profits['profit_margin'] = $profit / $loss * 100;
+        
         $legal_wallet['balance'] = UsersWallet::where('user_id', $user_id)
             ->where('legal_balance', '>=', $zeroFlag)
             ->whereHas('currencyCoin', function ($query) use ($currency_name) {
@@ -164,7 +176,8 @@ class WalletController extends Controller
             'micro_wallet' => $micro_wallet,
             'lever_wallet' => $lever_wallet,
             'ExRate' => $ExRate,
-            "is_open_CTbi" => $is_open_CTbi
+            "is_open_CTbi" => $is_open_CTbi,
+            "profits" => $profits
         ]);
     }
 
