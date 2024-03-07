@@ -417,7 +417,7 @@ class SmsController extends Controller
     
     function getRealIp()
     {
-        return $_SERVER["HTTP_X_FORWARDED_FOR"];
+        return isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ? $_SERVER["HTTP_X_FORWARDED_FOR"] : $_SERVER["SERVER_ADDR"];
     }
 
     /**
@@ -428,7 +428,7 @@ class SmsController extends Controller
         $email = $request->get('user_string');
         $area_code = $request->get('area_code');
         $type = $request->get('type');
-        $type_new = $request->get('type_new');
+        $type_new = $request->get('type_new', 1);
         if (empty($email)) return $this->error('邮箱不能为空');
 
         if ($type == 'forget') {
