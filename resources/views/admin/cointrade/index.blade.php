@@ -153,7 +153,7 @@
 	                });
                 }
                 if(obj.event === 'qiangzhi'){
-                    $.post('coin_trade/close',{
+                    $.post('close',{
                         id:data.id
                     },function(res){
                         if(res.type=="ok"){
