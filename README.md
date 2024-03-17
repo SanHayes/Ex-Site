@@ -13,7 +13,14 @@
 删除函数
 安装扩展 
 
-fileinfo opcache memcache redis imap exif intl xsl
+fileinfo
+opcache
+memcache
+redis
+imap
+exif
+intl
+xsl
 
 
 yum install python3
