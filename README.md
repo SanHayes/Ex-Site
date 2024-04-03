@@ -1,31 +1,21 @@
-# yum update -y nss curl libcurl
-
+### yum update -y nss curl libcurl
 环境为 ng1.18+php7.3+MySQL 5.6.50+phpMyAdmin 4.9
-
 添加域名，上传源码，添加数据库
-
 运行目录为/public
-
 设置伪静态laravel5
-
 开启SSL    安装es   安装 python3   设置反向代理
-
-删除函数
-安装扩展 
-
+### 删除函数
+添加下面函数禁用
+exec,system,shell_exec,passthru,chroot,chgrp,chown,proc_open,proc_get_status,dl,ini_restore,ini_alter,popen,pfsockopen
+### 安装扩展 
 fileinfo opcache memcache redis imap exif intl xsl
-
+### 按照python
 yum install python3
-
 pip3 install websocket-client redis
-
-清理缓存
-
+### 清理缓存
 php artisan config:cache
-
-设置代理
-
-  location ~/(wss|socket.io) {
+### 设置代理
+location ~/(wss|socket.io) {
 	# 此处改为 socket.io 后端的 ip 和端⼝即可 
 	proxy_pass http://127.0.0.1:2000; 
 	proxy_set_header Upgrade $http_upgrade;
@@ -33,13 +23,9 @@ php artisan config:cache
 	proxy_http_version 1.1;
 	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_set_header Host $host;
-  }
-
-
-es安装
-
+}
+### es安装
 rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
-
 vi /etc/yum.repos.d/elasticsearch.repo
 ----------------------------------------------------------------
 [elasticsearch-7.x]
@@ -53,7 +39,7 @@ type=rpm-md
 ----------------------------------------------------------------
 yum install elasticsearch -y
 service elasticsearch start
-
+### 添加计划任务
 然后添加计划任务
 每天 00:01
 
@@ -99,9 +85,6 @@ php artisan queue:work
 schedule:run
 cd /www/wwwroot/Site
 php artisan schedule:run -->
-
-矿机返现执行脚本  每天晚上12点执行一次就行
-https://www.vipgrayscale.com/api/user/kj   
 
 管理后台：https://xxxx.com/superdad 账号：admin 密码：123456
 代理后台：/agent 账号：admin 密码：123456
