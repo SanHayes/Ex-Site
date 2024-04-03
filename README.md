@@ -54,16 +54,41 @@ type=rpm-md
 yum install elasticsearch -y
 service elasticsearch start
 
-然后添加计划任务 n分钟 30分钟
-websocket
-cd /www/wwwroot/Site
-php artisan websocket:client restart
+然后添加计划任务
+每天 00:01
 
-webmsgsender
+理财结算
+cd /www/wwwroot/Site
+php artisan auto_dual_order
+
+锁仓派息
+cd /www/wwwroot/Site
+php artisan lhdispatch_interest
+
+每小时1次
+移除积压
+cd /www/wwwroot/Site
+php artisan remove_queue
+
+每分钟一次
+处理跟单
+cd /www/wwwroot/Site
+php artisan follow
+
+n分钟 30分钟
+
+1.elasticsearch
+service elasticsearch start
+
+2.webmsgsender
 cd /www/wwwroot/Site/public/vendor/webmsgsender
 php start.php restart
 
-robot
+3.websocket
+cd /www/wwwroot/Site
+php artisan websocket:client restart
+
+<!-- robot
 cd /www/wwwroot/Site
 php artisan robot 4
 
@@ -73,7 +98,7 @@ php artisan queue:work
 
 schedule:run
 cd /www/wwwroot/Site
-php artisan schedule:run
+php artisan schedule:run -->
 
 矿机返现执行脚本  每天晚上12点执行一次就行
 https://www.vipgrayscale.com/api/user/kj   
