@@ -3,8 +3,7 @@
 
 namespace App;
 
-
-use Faker\Provider\cs_CZ\DateTime;
+use DateTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -15,19 +14,32 @@ class LhDepositOrder extends Model
             'cancel_fee'
         ];
     public static function newOrder($user_id,$currency_id,$amount,$day,$rate){
-        $model = new self();
-        $model->user_id = $user_id;
-        $model->currency_id = $currency_id;
-        $model->amount = $amount;
-//        $model->day_rate = self::getDayRate($amount);
-        $model->start_at = date("Y-m-d",strtotime('+1 day'));
-        // $model->day_rate = ($rate/$day)/100;
-        $model->day_rate = $rate/100;
-        $day += 1;
-        // $day = Setting::getValueByKey('AUTU_UNLOCK_DAY',30);
-        $model->end_at = date("Y-m-d",strtotime("+$day day"));
-        $model->save();
-        return $model;
+        $LhDepositOrder = new self();
+        $order = $LhDepositOrder::where('user_id', $user_id)->where('currency_id', $currency_id)->where('status', 1)->first();
+        if($order){
+            $real_amount = $order->amount + $amount;
+            $config = DB::table('lh_deposit_config')->where('save_min', '<=', $real_amount)->where('save_max', '>=', $real_amount)->first();
+            $order->day_rate = $config->interest_rate / 100;
+            $order->amount += $amount;
+            $order->lock_amount += $amount;
+            $order->save();
+            return $order;
+        }else{
+            $model = new self();
+            $model->user_id = $user_id;
+            $model->currency_id = $currency_id;
+            $model->amount = $amount;
+            $model->lock_amount = $amount;
+    //        $model->day_rate = self::getDayRate($amount);
+            $model->start_at = date("Y-m-d",strtotime('+1 day'));
+            // $model->day_rate = ($rate/$day)/100;
+            $model->day_rate = $rate/100;
+            $day += 1;
+            // $day = Setting::getValueByKey('AUTU_UNLOCK_DAY',30);
+            $model->end_at = date("Y-m-d",strtotime("+$day day"));
+            $model->save();
+            return $model;
+        }
     }
     
     public static function unlockMoney($orderId){
@@ -103,13 +115,13 @@ class LhDepositOrder extends Model
             $model->delete();
             return false;
         }
-        if($user->parent_id){
-            $dad = Users::find($user->parent_id);
+        // if($user->parent_id){
+        //     $dad = Users::find($user->parent_id);
             
-            if($dad && $dad->parent_id){
-                $g_dad = Users::find($dad->parent_id);
-            }
-        }
+        //     if($dad && $dad->parent_id){
+        //         $g_dad = Users::find($dad->parent_id);
+        //     }
+        // }
         
         //先判断上次派息时间是否存在  不存在从开始时间派息
         $startDay = $model->last_settle_time?date("Y-m-d",strtotime($model->last_settle_time)):$model->start_at;
@@ -132,43 +144,50 @@ class LhDepositOrder extends Model
         $d2=strtotime($endDay);
         $dayCount=round(($d2-$d1)/3600/24);
         $totalInterest = 0;
-         $legal = UsersWallet::where("user_id", $user->id)
+        $legal = UsersWallet::where("user_id", $user->id)
             ->where("currency", $model->currency_id) //usdt
             ->lockForUpdate()
             ->first();
         DB::beginTransaction();
         try{
             for($i=0;$i<=$dayCount;$i++){
-                //执行结息操作
-                //1先加钱
+                //执行结息操作,先加钱
                 $day = date("Y-m-d",strtotime("+$i day",strtotime($startDay)));
-
+                //利率需要计算
+                $config = DB::table('lh_deposit_config')->where('save_min', '<=', $model->amount)->where('save_max', '>=', $model->amount)->first();
+                $model->day_rate = $config->interest_rate / 100;
                 $interest = bc_mul($model->amount ,$model->day_rate);
                 $totalInterest = bc_add($totalInterest,$interest);
-                // dump($model);die;
-                //写入结息的log
+                // if(strpos($model->withdraw_day, $day) !== false){
+                //     // 提现返回账户
+                //     change_wallet_balance(
+                //         $legal,
+                //         2,
+                //         $interest,
+                //         AccountLog::BANK_WITHDRAW,
+                //         '质押利息提现|'.$day,
+                //         false,
+                //         0,
+                //         0,
+                //         serialize([])
+                //     );
+                //     $model->withdraw_amount += $interest;
+                // }else{
+                //     // 不提现加到本金
+                //     $model->amount += $interest;
+                // }
+                $model->amount += $interest;
                 try {
+                    //写入结息的log
                     LhDepositOrderLog::newLog($user->id,$model->id,$interest,$day);
                 } catch (\Exception $e) {
                     // 已经存在，会抛出错误，继续下一步执行
                     continue;
                 }
             }
-            
-            //更新订单利息
+            //更新订单总利息
             $model->total_interest += $totalInterest;
-            change_wallet_balance(
-                $legal,
-                2,
-                $totalInterest,
-                AccountLog::BANK_WITHDRAW,
-                '锁仓利息',
-                false,
-                0,
-                0,
-                serialize([])
-            );
-          
+
             $model->last_settle_time = date("Y-m-d");
             //最后一天 退钱
             if($model->end_at <= date('Y-m-d')){
@@ -176,9 +195,9 @@ class LhDepositOrder extends Model
                 change_wallet_balance(
                     $legal,
                     2,
-                    -$model->amount,
-                    AccountLog::BANK_WITHDRAW,
-                    '锁仓解冻',
+                    -$model->lock_amount,
+                    AccountLog::MINING_BUY,
+                    '质押解冻|'.date('Y-m-d'),
                     true,
                     0,
                     0,
@@ -188,8 +207,8 @@ class LhDepositOrder extends Model
                     $legal,
                     2,
                     $model->amount,
-                    AccountLog::BANK_WITHDRAW,
-                    '锁仓返还',
+                    AccountLog::MINING_BUY,
+                    '质押返还|'.date('Y-m-d'),
                     false,
                     0,
                     0,
@@ -223,7 +242,7 @@ class LhDepositOrder extends Model
                 2,
                 $amount,
                 AccountLog::LOWER_REBATE,
-                '锁仓下级返利',
+                '质押下级返利',
                 false,
                 0,
                 0,
@@ -252,9 +271,22 @@ class LhDepositOrder extends Model
     }
     
     public function getCancelFeeAttribute(){
-        $amount = $this->attributes['amount'];
+        // $amount = $this->attributes['amount'];
+        $lock_amount = $this->attributes['lock_amount'];
+        // $end_at = $this->attributes['end_at'];
+        
+        // $since = new DateTime($end_at);
+        // $until = new DateTime('now'); // 当前日期
+         
+        // // 计算两个日期之间的差异
+        // $interval = $since->diff($until);
+        
         $rate = Setting::getValueByKey('cancel_deposit_fee');
         $rate /= 100;
-        return $amount*$rate;
+        // $cancel_amount = $lock_amount * $rate * $interval->days;
+        // if($cancel_amount > $amount)
+        //     $cancel_amount = $amount;
+        // return $cancel_amount;
+        return $lock_amount * $rate;
     }
 }

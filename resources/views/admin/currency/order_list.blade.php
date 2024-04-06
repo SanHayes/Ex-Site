@@ -84,25 +84,40 @@
                 ,cols: [[ //表头
                     {field: 'id', title: 'ID', width:80, sort: true}
                     
-                    ,{field: 'account_number', title: '用户', width:150}
+                    ,{field: 'account_number', title: '用户', width:250}
                      ,{field: 'currency_name', title: '币种', width:100}
-                    ,{field:'day_rate',title: '日利率(%)', width:100,}
-                    ,{field: 'total_rate', title: '总利率(%)', width:100}
-                    ,{field: 'amount', title: '存币数量', width:130}
+                    ,{field:'day_rate',title: '日利率', width:100}
+                    // ,{field: 'total_rate', title: '总利率(%)', width:100}
+                    ,{field: 'amount', title: '储蓄金额', width:130}
+                    ,{field: 'lock_amount', title: '本金', width:130}
                     ,{field: 'total_interest', title: '总利息', width:130}
                     ,{field: 'start_at', title: '开始时间', width:150}
                     ,{field: 'end_at', title: '到期时间',width:150}
-                    ,{field: 'created_at', title: '创建时间',width:150}
-                    ,{ title: '状态',templet:function(d){
+                    ,{field: 'created_at', title: '创建时间',width:200}
+                    // ,{ title: '状态',templet:function(d){
                        
-                        if(d.status==1){
-                            return '<span style="color:#00c087">进行中</span>';    
-                        }else if(d.status==2){
-                            return '<span style="color:#f00">到期</span>'; 
+                    //     if(d.status==1){
+                    //         return '<span style="color:#00c087">进行中</span>';    
+                    //     }else if(d.status==2){
+                    //         return '<span style="color:#f00">已到期</span>'; 
+                    //     }
+                    // }}
+                    ,{title:'操作',templet:function(d){
+                        if(d.is_cancel){
+                            if(d.status==1){
+                             return    '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="cancelOrder" title="取消质押订单"><i class="layui-icon"></i>赎回订单</a>' ;
+                            }else if(d.status==2){
+                                return '<span style="color:#f19710">已毁约</span>';
+                            }
+                        }else{
+                            if(d.status==1){
+                                return    '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="cancelOrder" title="取消质押订单"><i class="layui-icon"></i>赎回订单</a>' ;
+                            }else if(d.status==2){
+                                return '<span style="color:#0014ff">已到期</span>';
+                            }
                         }
-                    }
-                    }
-                    //  ,{title:'操作',minWidth:100,toolbar: '#barDemo'}
+                    }}
+                    
                 ]]
             });
             //监听提交
@@ -144,6 +159,24 @@
 	                    },
 	                    page: {curr: 1}         //重新从第一页开始
 	                });
+                }else if(obj.event === 'cancelOrder'){
+                     //管理员取消质押订单
+                    $.ajax({
+                        url:'{{url('admin/deposit/cancelOrder')}}'
+                        ,type:'post'
+                        ,dataType:'json'
+                        ,data : {id: obj.data.id,}
+                        ,success:function(res){
+                            if(res.type=='error'){
+                                layer.msg(res.message);
+                            }else{
+                               layer.msg(res.message);
+                                window.location.reload();
+                            }
+                        }
+                    });
+                    return false;
+                
                 }
             });
         });

@@ -933,14 +933,14 @@ class UserController extends Controller
     
     public function updatePayPassword()
     {
-
+        $oldpassword = Input::get('oldpassword', '');
         $password = Input::get('password', '');
         $re_password = Input::get('re_password', '');
         $code = Input::get('code', '');
         
-        if ($code != session('code')) {
-            return $this->error('验证码错误');
-        }
+        // if ($code != session('code')) {
+        //     return $this->error('验证码错误');
+        // }
         if (mb_strlen($password) < 6 || mb_strlen($password) > 16) {
             return $this->error('密码只能在6-16位之间');
         }
@@ -949,7 +949,9 @@ class UserController extends Controller
         }
         $user_id = Users::getUserId();
         $user = Users::find($user_id);
-
+        if(Users::MakePassword($oldpassword, $user->type) != $user->pay_password){
+            return $this->error('旧密码错误');
+        }
         $user->pay_password = Users::MakePassword($password, $user->type);
         try {
             $user->save();
@@ -1156,6 +1158,7 @@ class UserController extends Controller
                 $query->where('is_match',1);
             })->get(['id', 'currency', 'change_balance', 'lock_change_balance'])->toArray();
         $user["change_wallet"] = $change_wallet;
+        $user["pay_password_isnull"] = empty($user->pay_password) ? 'eqnull' : 'neqnull';
         return $this->success($user);
 
 
@@ -1685,16 +1688,16 @@ class UserController extends Controller
      //修改密码
     public function e_pwd()
     {
-        $account_number = Input::get('account_number', '');
+        $user_id = Users::getUserId();
+        // $account_number = Input::get('account_number', '');
         $password = Input::get('password', '');
         $type = Input::get('type', '1'); ///type:1登录密码，type:2支付密码
-        if (empty($account_number)) {
-            return $this->error('转入账户不能为空');
-        }
+
         if (empty($password)) {
             return $this->error('密码不能为空');
         }
-        $tra_user = Users::getByAccountNumber($account_number);
+        $tra_user = Users::find($user_id);
+        // $tra_user = Users::getByAccountNumber($account_number);
         if (empty($tra_user)) {
             return $this->error('用户未找到');
         }
@@ -1702,18 +1705,16 @@ class UserController extends Controller
         try {
             if ($type == 1) {
                 $tra_user->password = Users::MakePassword($password, $tra_user->type);
-
             } else {
                 $tra_user->pay_password = Users::MakePassword($password, $tra_user->type);
             }
-
             $tra_user->save();
             DB::commit();
-            return $this->success('密码修改成功');
         } catch (\Exception $ex) {
             DB::rollBack();
             return $this->error($ex->getMessage());
         }
+        return $this->success('success');
     }
 
     public function updateBalance(){
@@ -1846,7 +1847,7 @@ class UserController extends Controller
             ->where('users_wallet_out.user_id',$user_id)
             ->select('users_wallet_out.id', 'users_wallet_out.number',
                 'currency.name','users_wallet_out.create_time'
-            ,'users_wallet_out.status')
+            ,'users_wallet_out.status', 'users_wallet_out.notes')
             ->orderBy('users_wallet_out.id', 'desc')
             ->paginate($limit);
 

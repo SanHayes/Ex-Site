@@ -56,15 +56,14 @@
     </script>
 	<script type="text/html" id="ophtml">
 	    <a class="layui-btn layui-btn-xs" lay-event="show">查看</a>
-        {{d.status==1 ? '<button type="button" onclick="pass('+d.id+')">通过</button> <button type="button" onclick="refuse('+d.id+')" data-id='+d.id+' class="btn-refuse">拒绝</button>' : '' }}
+        {{d.status==1 ? '<button type="button" class="layui-btn layui-btn-normal layui-btn-xs" onclick="pass('+d.id+')">通过</button> <a  class="layui-btn layui-btn-danger layui-btn-xs" lay-event="refuse">拒绝</a>' : '' }}
         
    
 
     </script>
 
     <script type="text/html" id="acc">
-       
-        <a href="<?php echo e($imageServerUrl); ?>{{d.user_account}}" target="_blank" >查看</a>
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="img">显示</a>
     </script>
 
 <?php $__env->stopSection(); ?>
@@ -101,7 +100,7 @@
                     ,{field: 'currency_name', title: '虚拟币', width:80}
                     // ,{field: 'user_account', title: '支付账号', minWidth:110}
                     // ,{field: 'user_account', title: '支付凭证', minWidth:110,templet:"#acc"}
-                    ,{field: 'user_account', title: '封面图', minWidth:110, templet:"#acc"}
+                    ,{field: 'user_account', title: '充值凭证', minWidth:110, templet:"#acc"}
                     // ,{field: 'bank_account', title: '银行卡号', minWidth:80,templet:function(d){
                     //     if(d.type){
                     //         return d.bank_account;
@@ -160,18 +159,65 @@
                 var data = obj.data;
                 if(obj.event === 'show'){
                     layer_show('确认充值','<?php echo e(url('admin/user/charge_show')); ?>?id='+data.id,800,600);
+                }else if(obj.event === 'refuse'){
+                    layer.open({
+                      type: 1,
+                      skin: 'layui-layer-rim',
+                      area: ['660px', '400px'],
+                      content: '<div style="width:580px;height:200px;padding:30px 10px;"><div class="layui-form-item layui-form-text"><label class="layui-form-label">拒绝理由</label><div class="layui-input-block"><textarea id="desc" placeholder="请输入内容" class="layui-textarea"></textarea></div></div><div class="layui-form-item"><div class="layui-input-block"><button class="layui-btn" onclick="refuse('+data.id+')">立即提交</button></div></div></div>'
+                    });
+                }else if(obj.event === 'img'){
+                    var resourcesUrl = '<?php echo e($imageServerUrl); ?>'+data.user_account;
+                    if (resourcesUrl == "") {
+                        layer.msg("没有发现图片！");
+                        return;
+                    }
+                    var img = new Image();
+                    img.onload = function () {//避免图片还未加载完成无法获取到图片的大小。
+                        //避免图片太大，导致弹出展示超出了网页显示访问，所以图片大于浏览器时下窗口可视区域时，进行等比例缩小。
+                        var max_height = $(window).height() - 100;
+                        var max_width = $(window).width();
+        
+                        //rate1，rate2，rate3 三个比例中取最小的。
+                        var rate1 = max_height / img.height;
+                        var rate2 = max_width / img.width;
+                        var rate3 = 1;
+                        var rate = Math.min(rate1, rate2, rate3);
+                        //等比例缩放
+                        var imgHeight = img.height * rate; //获取图片高度
+                        var imgWidth = img.width * rate; //获取图片宽度
+        
+                        var imgHtml = "<img src='" + resourcesUrl + "' width='" + imgWidth + "px' height='" + imgHeight + "px'/>";
+                        //弹出层
+                        layer.open({
+                           type:1,//可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                           shade: 0.6,
+                           maxmin: true,
+                           anim: 1,
+                           title: '图片预览',
+                           area: ['auto', 'auto'],
+                           // skin: 'layui-layer-nobg', //没有背景色
+                           shadeClose: true,
+                           content: imgHtml
+                        });
+                    }
+                    img.src = resourcesUrl;
+                    // layer.photos({
+                    //     photos: '<?php echo e($imageServerUrl); ?>'+data.user_account //格式见API文档手册页
+                    //     ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机
+                    // });
                 }
             });
 
 		})
+
 		function pass(id){
-        
-          $.ajax({
-				url:'<?php echo e(url('admin/user/pass_req')); ?>',
-				type:'post',
-				dataType:'json',
-				data:{id:id},
-				success:function (res) {
+            $.ajax({
+            	url:'<?php echo e(url('admin/user/pass_req')); ?>',
+            	type:'post',
+            	dataType:'json',
+            	data:{id:id},
+            	success:function (res) {
                      if(res.type == 'ok'){
                          layer.msg(res.message);
                          setTimeout(function(){
@@ -179,27 +225,25 @@
                          },1200)
                      }
                  }
-		   })
+            })
 		}
-		   function refuse(id){
-          $.ajax({
-				url:'<?php echo e(url('admin/user/refuse_req')); ?>',
-				type:'post',
-				dataType:'json',
-				data:{id:id},
-				success:function (res) {
-                   if(res.type == 'ok'){
+		function refuse(id){
+		    var desc = $('#desc').val();
+            $.ajax({
+            	url:'<?php echo e(url('admin/user/refuse_req')); ?>',
+            	type:'post',
+            	dataType:'json',
+            	data:{"id": id, "desc": desc},
+            	success:function (res) {
+                  if(res.type == 'ok'){
                          layer.msg(res.message);
                          setTimeout(function(){
                              window.location.reload(); 
                          },1200)
                      }
                  }
-		   })
-		  }
-		   
-            //监听提交
-            
+            })
+		}
     </script>
 
 <?php $__env->stopSection(); ?>

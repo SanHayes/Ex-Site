@@ -11,6 +11,7 @@ namespace App;
 
 use App\Users;
 
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -355,25 +356,39 @@ class AccountLog extends Model
 
     public function getInfoAttribute()
     {
-        $type = $this->attributes['type'];
-        if ($type == 8) {
-            $type = 3;
+        $info = $this->attributes['info'];
+        // if ($type == 8) {
+        //     $type = 3;
+        // }
+        // if ($type == 502) {
+        //     $type = 8;
+        // }
+        $lang = session()->get('lang');
+        // if ($this->attributes['is_lock']) {
+        //     $prefix = str_replace('account_log_info.', '', __("account_log_info.is_lock")) . ' ';
+        // }
+        // $info = str_replace('account_log_info.', '', __("account_log_info.$type"));
+        // if ($info == $type) {
+        //     $info = str_replace('account_log_info.', '', __("account_log_info.unknown"));
+        // }
+        if($lang != 'zh'){
+            $r_md5 = md5($info);
+            $r_md5_tran = Redis::get($r_md5.'_'.$lang);
+            
+            if($r_md5_tran != ''){
+                $info = $r_md5_tran;
+            }else{
+                $r_md5_tran = mtranslate($info, $lang);
+                Redis::set($r_md5.'_'.$lang, $r_md5_tran);
+                $info = $r_md5_tran;
+            }
         }
-        if ($type == 502) {
-            $type = 8;
-        }
-        // var_dump($this);
-        $prefix = '';
-        //$lang = session()->get('lang');
-        if ($this->attributes['is_lock']) {
-            $prefix = str_replace('account_log_info.', '', __("account_log_info.is_lock")) . ' ';
-        }
-        $info = str_replace('account_log_info.', '', __("account_log_info.$type"));
-        if ($info == $type) {
-            $info = str_replace('account_log_info.', '', __("account_log_info.unknown"));
-        }
-
-        return $prefix . $info;
+        return $info;
+    }
+    
+    public function hasChinese($str) {
+        $pattern = '/[\x{4e00}-\x{9fa5}]/u'; // Unicode编码范围内的汉字
+        return preg_match($pattern, $str);
     }
 
     //中文简体（兼容之前的调用）

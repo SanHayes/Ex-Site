@@ -37,10 +37,10 @@ class Index extends Base
             ->sum('number');
 
         $data['today_charge_count'] = DB::table('charge_req')
-            ->whereBetween('created_at',$today)
+            ->where('created_at', '>=', date('Y-m-d').' 00:00:00')
             ->count();
         $data['today_charge_amount'] = DB::table('charge_req')
-            ->whereBetween('created_at',$today)
+            ->where('created_at', '>=', date('Y-m-d').' 00:00:00')
             ->sum('amount');
 
         return view('manages.console')->with('data',$data);

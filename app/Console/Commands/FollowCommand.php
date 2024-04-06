@@ -44,6 +44,7 @@ class FollowCommand extends Command
      */
     public function handle()
     {
+        echo '跟单任务开始运行' . PHP_EOL;
         Follow::query()
             ->where('status', 1)
             ->chunkById(50, function ($items) {
@@ -51,6 +52,7 @@ class FollowCommand extends Command
                     $this->handleFollow($follow);
                 });
             });
+        echo '跟单任务运行结束' . PHP_EOL;
     }
 
     protected function handleFollow($follow)
@@ -194,12 +196,11 @@ class FollowCommand extends Command
             }
             DB::commit();
             
-            dump("跟随订单已生成，ID：{$lever_transaction->id}");
+            echo "跟随订单已生成，ID：{$lever_transaction->id}";
         } catch (\Throwable $ex) {
             DB::rollBack();
-            $msg = "跟随者用户id：{$follow->user_id}，跟随订单id：{$order['id']}，" . $ex->getMessage();
+            echo $msg = "跟随者用户id：{$follow->user_id}，跟随订单id：{$order['id']}，" . $ex->getMessage();
             $this->writeLog($msg);
-            dump($msg);
             return false;
         }
     }

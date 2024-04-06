@@ -147,7 +147,7 @@ if(url.indexOf("id")!=-1){
             switch (obj.event) {
                 case 'add':
                     layer.open({
-                        title: '添加锁仓挖矿'
+                        title: '添加质押挖矿'
                         ,type: 2
                         ,content: '/admin/currency/deposit_config?c_id='+currency_id
                         ,area: ['600px', '380px']
@@ -155,13 +155,13 @@ if(url.indexOf("id")!=-1){
                     break;
                 case 'update':
                     if (selected.data.length != 1) {
-                        layer.msg('只能编辑一个锁仓挖矿');
+                        layer.msg('只能编辑一个质押挖矿');
                         return false;
                     }
                     id = selected.data[0].id    
                     var data=selected.data[0];
                     layer.open({
-                        title: '编辑锁仓挖矿'
+                        title: '编辑质押挖矿'
                         ,type: 2
                         ,content: '/admin/currency/deposit_config?id=' + id+"&day="+data.day+"&rate="+data.total_interest_rate+"&save_min="+data.save_min
                         ,area: ['600px', '380px']
@@ -169,7 +169,7 @@ if(url.indexOf("id")!=-1){
                     break;
                 case 'delete':
                     if (selected.data.length != 1) {
-                        layer.msg('选择一个锁仓挖矿才能删除');
+                        layer.msg('选择一个质押挖矿才能删除');
                         return false;
                     }
                     id = selected.data[0].id

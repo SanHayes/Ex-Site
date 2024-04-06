@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manages;
 use App\Admin;
 use App\AdminRole;
 use App\Users;
+use App\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Input;
@@ -16,7 +17,7 @@ class Login extends Controller
 
         $username = Input::get('username', '');
         $password = Input::get('password', '');
-        $password2 = $password;
+        $google_code = Input::get('vercode', '');
         if (empty($username)) {
             return ['code'=>1,'msg'=>'用户名必须填写'];
         }
@@ -35,7 +36,28 @@ class Login extends Controller
             if (empty($role)) {
                 return ['code'=>1,'msg'=>'账号异常'];
             } else {
-               
+                // if($admin->session){
+                //     session()->getHandler()->destroy($admin->session);
+                // }
+                if(empty($admin->secret) || empty($admin->qrcod_url)){
+                    $WebName = Setting::getValueByKey('web_name', '');
+                    $google = GoogleAuthenticator($admin->username, $WebName . "管理系统");
+                    $admin->secret = $google['secret'];
+                    $admin->qrcod_url = $google['qrcod_url'];
+                    
+                }
+                if ($admin->google_verify > 0){
+                    if (empty($google_code)){
+                        return ['code'=>500,'msg'=>'谷歌验证码必须填写'];
+                    }
+                    $result = GoogleVerify($admin->secret, $google_code);
+                    if (!$result['result']){
+                        return ['code'=>500,'msg'=>'谷歌验证码错误,请确认后再登录'];
+                    }
+                }
+                session()->put('admin_secret', $admin->secret);
+                session()->put('admin_qrcod_url', $admin->qrcod_url);
+                session()->put('admin_google_verify', $admin->google_verify);
                 session()->put('admin_username', $admin->username);
                 session()->put('admin_id', $admin->id);
                 session()->put('admin_role_id', $admin->role_id);

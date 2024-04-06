@@ -9,6 +9,7 @@ class RemoveQueue extends Command
 	protected $description = "定期移除积压任务";
 	public function handle()
 	{
+	    echo '移除积压任务开始运行' . PHP_EOL;
 		$this->comment("start1");
 		$redis = \Illuminate\Support\Facades\Redis::connection();
 		$res = $redis->keys('queues:*');
@@ -18,5 +19,6 @@ class RemoveQueue extends Command
 			}
 		}
 		$this->comment("end");
+		echo '移除积压任务运行结束' . PHP_EOL;
 	}
 }

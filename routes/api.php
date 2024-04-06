@@ -27,6 +27,8 @@ Route::group(['middleware' => ['XSS', 'lang']], function () {
     Route::middleware('check_api')->post('/lh/deposit', 'Api\BankController@newDeposit');//新质押
     Route::middleware('check_api')->get('/lh/deposit/order', 'Api\BankController@myDepositOrder');//我的质押订单
     Route::middleware('check_api')->post('/lh/deposit/order/cancel', 'Api\BankController@cancelOrderNew');
+    Route::middleware('check_api')->post('/lh/deposit/withdraw', 'Api\BankController@setwithdraw');//日利息转提现
+    Route::get('/lh/updateRate', 'Api\BankController@updateRate');
     Route::get('/wallet/getRateCurrency', 'Api\WalletController@getRateCurrency');
     Route::get('legaldeal/money_type', 'Api\CurrencyController@getMoneyType');
 

@@ -63,6 +63,13 @@
                 <input type="text" name="password" autocomplete="off" placeholder="" class="layui-input" value="">
             </div>
         </div>
+        
+        <div class="layui-form-item">
+            <label class="layui-form-label">交易密码</label>
+            <div class="layui-input-block">
+                <input type="text" name="pay_password" autocomplete="off" placeholder="" class="layui-input" value="">
+            </div>
+        </div>
 
         <div class="layui-form-item">
             <label class="layui-form-label">期权控制</label>
@@ -80,12 +87,6 @@
         <!--    <label class="layui-form-label">法币交易账号</label>-->
         <!--    <div class="layui-input-block">-->
         <!--        <input type="text" name="account_number" autocomplete="off" placeholder="" class="layui-input" value="{{$result->account_number}}">-->
-        <!--    </div>-->
-        <!--</div>-->
-        <!--<div class="layui-form-item">-->
-        <!--    <label class="layui-form-label">法币交易密码</label>-->
-        <!--    <div class="layui-input-block">-->
-        <!--        <input type="text" name="pay_password" autocomplete="off" placeholder="" class="layui-input" value="">-->
         <!--    </div>-->
         <!--</div>-->
 

@@ -467,8 +467,7 @@ class CurrencyProjectController extends Controller
         }
         unset($item);
 
-        $result = array('data' => $lists->items(), 'page' => $page, 'pages' => $lists->lastPage(), 'total' => $lists->total());
-        return $this->success($result);
+        return $this->success($lists);
     }
 
 }

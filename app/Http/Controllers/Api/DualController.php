@@ -55,10 +55,7 @@ class DualController  extends Controller
         
         $list = $list->select('dual_order.*', 'dual_currency.currency_id','dual_currency.type','dual_currency.exercise_price','dual_currency.remaining_number','dual_currency.currency_name','dual_currency.name')->orderBy('dual_order.id', 'desc')->paginate($limit);
 
-        return $this->success(array(
-            "list" => $list->items(),
-            "limit" => $limit,
-        ));
+        return $this->success($list);
     }
     
     //购买理财

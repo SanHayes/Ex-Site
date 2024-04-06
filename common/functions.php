@@ -9,6 +9,38 @@ use App\WalletLog;
 defined('DECIMAL_SCALE') || define('DECIMAL_SCALE', 8);
 bcscale(DECIMAL_SCALE);
 
+function GoogleAuthenticator($username = 'admin',$app_name = '管理系统')
+{
+    require_once '../app/GoogleAuthenticator.php';
+	// 引用谷歌验证类 若无法引用请看文章最后
+	$google = new \App\PHPGangsta_GoogleAuthenticator();
+	// 生成谷歌key
+	$secret = $google->createSecret();
+	//echo "<hr>";
+	// 将谷歌加密key信息保存，并生成二维码链接
+	$qrcod_url = $google->getQRCodeGoogleUrl($username, $secret, $app_name);
+    //echo '<img src="'.$qrcod_url.'">';
+    return ['secret' => $secret, 'qrcod_url' => $qrcod_url];
+}
+
+function GoogleVerify($secret, $code)
+{
+    require_once '../app/GoogleAuthenticator.php';
+	// 引用谷歌验证类 若无法引用请看文章最后
+	$google = new \App\PHPGangsta_GoogleAuthenticator();
+	
+    // 谷歌身份验证器上展示的6位数字验证码
+    if($code == '') return ['result' => false];
+    
+    // 误差时间，谷歌身份验证器30秒更换一次，这个表示最大的误差时间
+    $time = 0;//0表示实时
+    
+    // 获取验证结果 返回结果true，false
+    $checkResult = $google->verifyCode($secret,$code,$time);
+    
+    return ['result' => $checkResult];
+}
+
 function xssCode($v){
          if (empty($v)) {
                 return '';

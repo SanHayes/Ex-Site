@@ -53,8 +53,8 @@ class Locking extends Command
 			$data->balance = $data->balance + $money;
 			$data->save();
 			AccountLog::insertLog(array("user_id" => $data->user_id, "value" => $money, "type" => AccountLog::LOCK_BALANCE, "info" => "释放余额增加"));
-			AccountLog::insertLog(array("user_id" => $data->user_id, "value" => -1 * $money, "type" => AccountLog::LOCK_REMAIN_BALANCE, "info" => "锁仓减少"));
-			$this->comment("锁仓改变：" . $data->user_id);
+			AccountLog::insertLog(array("user_id" => $data->user_id, "value" => -1 * $money, "type" => AccountLog::LOCK_REMAIN_BALANCE, "info" => "质押减少"));
+			$this->comment("质押改变：" . $data->user_id);
 			DB::commit();
 		} catch (\Exception $ex) {
 			DB::rollback();

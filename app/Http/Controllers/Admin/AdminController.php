@@ -9,6 +9,7 @@ use App\Agent;
 use App\Users;
 use App\UsersWallet;
 use Validator;
+use App\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -55,9 +56,9 @@ class AdminController extends Controller{
 
     public function postAdd(Request $request)
     {
-        // if(session()->get('admin_is_super') != '1') {
-        //     abort(403);
-        // }
+        if(session()->get('admin_is_super') != '1') {
+            abort(403);
+        }
         $id = Input::get('id', null);
         $validator = Validator::make(Input::all(), [
             'username' => 'required',
@@ -93,13 +94,43 @@ class AdminController extends Controller{
         if($validator->fails()) {
             return $this->error($validator->errors()->first());
         }
+        if(empty($id)) {
+            $WebName = Setting::getValueByKey('web_name', '');
+            $google = GoogleAuthenticator($adminUser->username, $WebName . "管理系统");
+            $adminUser->secret = $google['secret'];
+            $adminUser->qrcod_url = $google['qrcod_url'];
+        }
+        $adminUser->google_verify = Input::get('google_verify', 0);
+        
         try {
+            if($adminUser->session){
+                session()->getHandler()->destroy($adminUser->session);
+            }
             $adminUser->save();
         }catch (\Exception $ex){
             $validator->errors()->add('error', $ex->getMessage());
             return $this->error($validator->errors()->first());
         }
-        return $this->success('添加成功');
+        
+        return $this->success('操作成功');
+    }
+    
+    public function update()
+    {
+        $admin = Admin::find(Input::get('id'));
+        if($admin == null) {
+            abort(404);
+        }
+        $WebName = Setting::getValueByKey('web_name', '');
+        $google = GoogleAuthenticator($admin->username, $WebName . "管理系统");
+        $admin->secret = $google['secret'];
+        $admin->qrcod_url = $google['qrcod_url'];
+        try {
+            $admin->save();
+            return $this->success('重置成功');
+        }catch (\Exception $ex){
+            return $this->error('重置失败');
+        }
     }
 
     public function del()

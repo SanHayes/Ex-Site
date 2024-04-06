@@ -91,7 +91,7 @@ class LoginController extends Controller
             return $this->error('密码只能在6-16位之间');
         }
         if ($code != session('code') && $type=="email") {
-            return $this->error('验证码错误');
+            //return $this->error('验证码错误');
         }
         $user = Users::getByString($user_string);
         if (! empty($user)) {
@@ -102,9 +102,9 @@ class LoginController extends Controller
         $code_string = session('code');
         
         // if ($code != '9188') {
-            if (empty($code) || ($code != $code_string)) {
-                return $this->error('验证码不正确');
-            }
+            // if (empty($code) || ($code != $code_string)) {
+               // return $this->error('验证码不正确');
+            // }
         // }
         // 2021-09-09  修改为 根据后台开关  验证邀请码是否必填
         $sharar_radio = DB::table('settings')->where('key','sharar_radio')->first();
@@ -189,7 +189,7 @@ class LoginController extends Controller
         $account = Input::get('account', '');
         
         $password = Input::get('password', '');
-        // $oldpassword = Input::get('oldpassword', '');
+        $oldpassword = Input::get('oldpassword', '');
         $repassword = Input::get('repassword', '');
         $code = Input::get('code', '');
         
@@ -216,9 +216,9 @@ class LoginController extends Controller
         if (empty($user)) {
             return $this->error('账号不存在');
         }
-        // if(Users::MakePassword($oldpassword)!=$user->password){
-        //     return $this->error('旧密码错误');
-        // }
+        if(Users::MakePassword($oldpassword)!=$user->password){
+            return $this->error('旧密码错误');
+        }
         $user->password = Users::MakePassword($password);
         try {
             $user->save();

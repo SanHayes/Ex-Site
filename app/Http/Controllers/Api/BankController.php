@@ -234,35 +234,44 @@ class BankController extends Controller
         return $this->success('入金成功');
     }
 
-
-        
-    
     public function config(Request $request){
-        $page = $request->get('page');
         $list = DB::table('lh_deposit_config')->join('currency','currency.id','=','currency_id')
-        ->offset(($page-1)*10)->limit(10)
         ->select(['currency.name as currency_name','currency.logo as currency_logo','lh_deposit_config.*'])
         ->get();
         return $this->success($list);
     }
     
+    public function updateRate(Request $request){
+        $res = LhDepositOrder::get();
+        foreach($res as $key=>$order){
+            $config = DB::table('lh_deposit_config')->where('save_min', '<=', $order->amount)->where('save_max', '>=', $order->amount)->first();
+            $day_rate = $config->interest_rate / 100;
+            if($day_rate != floatval($order->day_rate)){
+                DB::table('lh_deposit_order')->where('id', $order->id)->update(['day_rate'=>$day_rate]);
+            }
+        }
+        return $this->success('设置成功');
+    }
+    
     public function newDeposit(Request $request){
-        $id = $request->get('config_id');
         $amount = $request->get('amount');
-        $config = DB::table('lh_deposit_config')->where('id',$id)->first();
         if($amount<=0){
-            return $this->error('参数错误');
+            return $this->error('金额错误');
         }
+        $config = DB::table('lh_deposit_config')->where('save_min', '<=', $amount)->where('save_max', '>=', $amount)->first();
         if(!$config){
-            return $this->error('项目不存在');
+            return $this->error('您输入的金额范围不存在');
         }
-        if($amount < $config->save_min){
-            return $this->error('最少存入数量为：'.$config->save_min);
-        }
-        //钱包
-         $user_id = Users::getUserId();
-     
-         $legal = UsersWallet::where("user_id", $user_id)
+        $user_id = Users::getUserId();
+        
+        // $order = LhDepositOrder::where('user_id', $user_id)->where('status', 1)->first();
+        // if($order){
+        //     return $this->error('您有未到期的质押订单');
+        // }
+        // if($amount < $config->save_min){
+        //     return $this->error('最少存入数量为：'.$config->save_min);
+        // }
+        $legal = UsersWallet::where("user_id", $user_id)
             ->where("currency", $config->currency_id) //usdt
             ->lockForUpdate()
             ->first();
@@ -271,10 +280,10 @@ class BankController extends Controller
             $result = change_wallet_balance(
                 $legal,
                 2,
-                -$amount,
+                $amount,
                 AccountLog::TRANSFER_TO_LH_ACCOUNT,
-                '锁仓',
-                false,
+                '质押冻结|'.date('Y-m-d'),
+                true,
                 0,
                 0,
                 serialize([])
@@ -282,17 +291,15 @@ class BankController extends Controller
             $result = change_wallet_balance(
                 $legal,
                 2,
-                $amount,
+                -$amount,
                 AccountLog::TRANSFER_TO_LH_ACCOUNT,
-                '锁仓',
-                true,
+                '质押扣除|'.date('Y-m-d'),
+                false,
                 0,
                 0,
                 serialize([])
             );
-            
-            $order = LhDepositOrder::newOrder($user_id,$config->currency_id,$amount,$config->day,$config->interest_rate);
-            
+            LhDepositOrder::newOrder($user_id,$config->currency_id,$amount,$config->day,$config->interest_rate);
             DB::commit();
         }catch (\Exception $e){
             DB::rollBack();
@@ -355,7 +362,6 @@ class BankController extends Controller
 
     public function myDepositOrder(Request $request){
         $user_id = Users::getUserId();
-       
         $limit = $request->get('limit', 20);
         $page = $request->get('page', 1);
         $isCancel = $request->get('is_cancel',0);
@@ -369,15 +375,17 @@ class BankController extends Controller
         if($status){
             $where['status'] = $status;
         }
-
         $res = LhDepositOrder::where('user_id',$user_id)
             ->join('currency','currency.id','=','currency_id')
             ->where($where)
             ->orderBy('lh_deposit_order.id','desc')
             ->skip($limit*($page-1))->take($limit)
-            ->get(['currency.name as currency_name','lh_deposit_order.id','amount','day_rate','total_interest','start_at','end_at','status']);
+            ->get(['currency.name as currency_name','lh_deposit_order.id','amount','day_rate','total_interest','start_at','end_at','status','lock_amount','withdraw_amount']);
+            
+        $total_interest = LhDepositOrder::where('user_id',$user_id)->sum('total_interest');
         return $this->success([
-            'order_list' => $res
+            'order_list' => $res,
+            'total_interest' => $total_interest
         ]);
     }
     
@@ -401,17 +409,28 @@ class BankController extends Controller
         DB::beginTransaction();
         try{
             //扣钱
-            $returnAmount = $order->amount-$order->cancel_fee;
+            $returnAmount = $order->amount - $order->cancel_fee;
             
-             $order->status = 2;
+            $order->status = 2;
             $order->is_cancel = 1;
             $order->save();
-            $result = change_wallet_balance(
+            change_wallet_balance(
+                $legal,
+                2,
+                -$order->lock_amount,
+                AccountLog::BANK_WITHDRAW,
+                '质押赎回解冻|'.date('Y-m-d'),
+                true,
+                0,
+                0,
+                serialize([])
+            );
+            change_wallet_balance(
                 $legal,
                 2,
                 $returnAmount,
                 AccountLog::BANK_WITHDRAW,
-                '锁仓返还',
+                '质押赎回返还|'.date('Y-m-d'),
                 false,
                 0,
                 0,
@@ -425,7 +444,52 @@ class BankController extends Controller
         return $this->success('毁约成功');
     }
 
-
+    public function setwithdraw(){
+        $orderId = Input::get('id');
+        $amount = Input::get('amount');
+        $user_id = Users::getUserId();
+        
+        $order = LhDepositOrder::find($orderId);
+        if(!$order){
+            return $this->error('找不到存单');
+        }
+        if($amount > ($order->amount - $order->lock_amount) || $amount < 0){
+            return $this->error('提现金额异常');
+        }
+        if($order->user_id != $user_id){
+            return $this->error('非法操作');
+        }
+        if($order->status!=1){
+            return $this->error('存单状态异常');
+        }
+        $legal = UsersWallet::where("user_id", $user_id)
+            ->where("currency", $order->currency_id) //usdt
+            ->lockForUpdate()
+            ->first();
+        DB::beginTransaction();
+        try{
+            // 提现返回账户
+            change_wallet_balance(
+                $legal,
+                2,
+                $amount,
+                AccountLog::BANK_WITHDRAW,
+                '质押利息提现|'.date('Y-m-d'),
+                false,
+                0,
+                0,
+                serialize([])
+            );
+            $order->withdraw_amount = $order->withdraw_amount + $amount;
+            $order->amount = $order->amount - $amount;
+            $order->save();
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            return $this->error($e->getMessage());
+        }
+        return $this->success('设置成功');
+    }
 
     public function cancelOrder(){
         return $this->error('功能暂不可用');

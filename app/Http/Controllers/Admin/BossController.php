@@ -33,21 +33,43 @@ class BossController extends Controller
         DB::beginTransaction();
         try{
             //扣钱
-            $returnAmount = $order->amount-$order->cancel_fee;
+            $returnAmount = $order->amount - $order->cancel_fee;
             $order->status = 2;
             $order->is_cancel = 1;
-            $order->save();
-            $result = change_wallet_balance(
+            // $result = change_wallet_balance(
+            //     $legal,
+            //     2,
+            //     $returnAmount,
+            //     AccountLog::MINING_BUY,
+            //     '质押返还',
+            //     false,
+            //     0,
+            //     0,
+            //     serialize([])
+            // );
+            change_wallet_balance(
+                $legal,
+                2,
+                -$order->lock_amount,
+                AccountLog::MINING_BUY,
+                '质押赎回解冻|'.date('Y-m-d'),
+                true,
+                0,
+                0,
+                serialize([])
+            );
+            change_wallet_balance(
                 $legal,
                 2,
                 $returnAmount,
                 AccountLog::MINING_BUY,
-                '锁仓返还',
+                '质押赎回返还|'.date('Y-m-d'),
                 false,
                 0,
                 0,
                 serialize([])
             );
+            $order->save();
             DB::commit();
         }catch (\Exception $e){
             DB::rollBack();
@@ -175,19 +197,21 @@ class BossController extends Controller
         $rate = $request->get('rate');
         $intro = $request->get('intro');
         $save_min = $request->get('save_min');
+        $save_max = $request->get('save_max');
         $model = DB::table('lh_deposit_config')->where('id',$configId)->first();
         if(!$model){
-            return $this->error('找不到此期限');
+            return $this->error('找不到此配置');
         }
-        $res = DB::table('lh_deposit_config')->where('id','<>',$configId)->where('currency_id',$model->currency_id)->where('day',$day)->first();
-        if($res){
-            return $this->error('存在重复的期限');
-        }
+        // $res = DB::table('lh_deposit_config')->where('id','<>',$configId)->where('currency_id',$model->currency_id)->where('day',$day)->first();
+        // if($res){
+        //     return $this->error('存在重复的期限');
+        // }
         DB::table('lh_deposit_config')->where('id',$configId)->update([
             'day' => $day,
             // 'total_rate' => $rate,
             'interest_rate' => $rate,
             'save_min' => $save_min,
+            'save_max' => $save_max,
             'intro' => $intro
             // 'created_at' => date('Y-m-d H:i:s')
         ]);

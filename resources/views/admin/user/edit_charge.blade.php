@@ -76,6 +76,11 @@
                             </td>
                         </tr>
                      @endif
+                      <tr>
+                        <td colspan="2">
+                            备注：{{$charge_info->desc}}
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             </div>

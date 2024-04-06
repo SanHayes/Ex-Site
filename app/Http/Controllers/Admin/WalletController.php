@@ -29,13 +29,15 @@ class WalletController extends Controller
                 $address != '' && $query->where('address', $address);
             });
         $query_total = clone $query;
-        $total = $query_total->select([
-            DB::raw('sum(legal_balance) as legal_balance'),
-            DB::raw('sum(lock_legal_balance) as lock_legal_balance'),
-            DB::raw('sum(change_balance) as change_balance'),
-            DB::raw('sum(lock_change_balance) as lock_change_balance'),
-            DB::raw('sum(lever_balance) as lever_balance'),
-            DB::raw('sum(lock_lever_balance) as lock_lever_balance'),
+        $total = $query_total->join('currency', 'users_wallet.currency', '=', 'currency.id')->select([
+            DB::raw('sum(users_wallet.legal_balance * currency.price) as legal_balance'),
+            DB::raw('sum(users_wallet.lock_legal_balance * currency.price) as lock_legal_balance'),
+            DB::raw('sum(users_wallet.change_balance * currency.price) as change_balance'),
+            DB::raw('sum(users_wallet.lock_change_balance * currency.price) as lock_change_balance'),
+            DB::raw('sum(users_wallet.lever_balance * currency.price) as lever_balance'),
+            DB::raw('sum(users_wallet.lock_lever_balance * currency.price) as lock_lever_balance'),
+            DB::raw('sum(users_wallet.micro_balance * currency.price) as micro_balance'),
+            DB::raw('sum(users_wallet.lock_micro_balance * currency.price) as lock_micro_balance'),
         ])->first();
         $total = $total->setAppends([]);
         $user_wallet = $query->orderBy('old_balance', 'desc')->paginate($limit);

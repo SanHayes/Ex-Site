@@ -87,6 +87,12 @@
                             </td>
                         </tr>
                      <?php endif; ?>
+                      <tr>
+                        <td colspan="2">
+                            备注：<?php echo e($charge_info->desc); ?>
+
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             </div>

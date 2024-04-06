@@ -44,28 +44,37 @@
                                 , url: url
                                 , page: true
                                 ,limit: 20
-                                , cols: [[
-                                    {field: 'id', title: 'ID', width: 150}
-                                    ,{field:'currency_name',title: '币种',width: 150}
-                                    ,{field:'address',title:'充币地址', width:200}
-
-                                    ,{field:'micro_balance',title:'期权余额', width:150}
-                                    ,{field:'lock_micro_balance',title:'期权锁定余额', width:150}
-
-                                    ,{field:'lever_balance',title:'杠杆余额', width:150}
-                                    ,{field:'lock_lever_balance',title:'杠杆锁定余额', width:150}
-
-                                    ,{field:'legal_balance',title:'法币余额', width:150}
-                                    ,{field:'lock_legal_balance',title:'法币锁定余额', width:150}
-
-                                    ,{field:'change_balance',title:'币币余额', width:150}
-                                    ,{field:'lock_change_balance',title:'币币锁定余额', width:150}
-
-
-                                    // ,{field:'old_balance',title:'链上余额', width:150}
-                                    ,{field:'create_time',title:'时间', width:200}
-                                    ,{fixed: 'right', title: '操作', width: 280, align: 'center', toolbar: '#barDemo'}
-                                ]]
+                                , cols: [
+                                    [
+                                        {field: 'id', title: 'ID', width: 150}
+                                        ,{field:'currency_name',title: '币种',width: 150}
+                                        ,{field:'address',title:'充币地址', width:200}
+    
+                                        ,{field:'micro_balance',title:'期权余额', width:150}
+                                        ,{field:'lock_micro_balance',title:'期权锁定余额', width:150}
+    
+                                        ,{field:'lever_balance',title:'杠杆余额', width:150}
+                                        ,{field:'lock_lever_balance',title:'杠杆锁定余额', width:150}
+                                        
+                                        ,{field:'change_balance',title:'币币余额', width:150}
+                                        ,{field:'lock_change_balance',title:'币币锁定余额', width:150}
+    
+                                        ,{field:'legal_balance',title:'法币余额', width:150}
+                                        ,{field:'lock_legal_balance',title:'法币锁定余额', width:150}
+                                        
+                                        // ,{field:'old_balance',title:'链上余额', width:150}
+                                        ,{field:'create_time',title:'时间', width:200}
+                                        ,{fixed: 'right', title: '操作', width: 280, align: 'center', toolbar: '#barDemo'}
+                                    ]
+                                ],
+                                done: function(res, curr, count) {
+                                    var total = res.extra_data.total;
+                                    console.log(total)
+                                    $('#legal_total p.num-value').text(total.legal_balance);
+                                    $('#change_total p.num-value').text(total.change_balance);
+                                    $('#lever_total p.num-value').text(total.lever_balance);   
+                                    $('#micro_total p.num-value').text(total.micro_balance);   
+                                }
                             });
                         }
                         var user_id = $("input[name='user_id']").val()

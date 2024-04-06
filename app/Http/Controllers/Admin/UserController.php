@@ -27,7 +27,9 @@ use App\{Address,
     MyQuotation,
     UserReal,
     UsersWallet,
-    UserCashInfoInternational};
+    UserCashInfoInternational,
+    LhDepositOrder
+};
 use App\UsersWalletWithdraw;
 use Session;
 use App\Agent;
@@ -326,7 +328,7 @@ class UserController extends Controller
             $user->password = Users::MakePassword($password);
         }
         if (!empty($pay_password)) {
-            $user->pay_password = $pay_password;
+            $user->pay_password = Users::MakePassword($pay_password, $user->type);
         }
         if (!empty($is_service)) {
             $has_service = Users::where('is_service',1)->first();
@@ -475,8 +477,8 @@ class UserController extends Controller
             return $this->error('参数错误');
         }
         $list = new UsersWallet();
-        $list = $list->where('user_id', $user_id)->orderBy('id', 'desc')->paginate($limit);
-
+        $list = $list->where('user_id', $user_id)->paginate($limit);
+    
         return response()->json(['code' => 0, 'data' => $list->items(), 'count' => $list->total()]);
     }
 
@@ -877,6 +879,77 @@ class UserController extends Controller
         }
         $result = change_user_candy($user, $change, AccountLog::ADMIN_CANDY_BALANCE, '后台调整' . ($way == 2 ? '减少' : '增加') . '通证 ' . $memo);
         return $result === true ? $this->success('调整成功') : $this->error('调整失败:' . $result);
+    }
+    
+    public function lh(Request $request)
+    {
+        $id = $request->get('id', 0);
+
+        if (empty($id)) {
+            return $this->error("参数错误");
+        }
+        $user = Users::find($id);
+
+        if ($request->getMethod() == 'POST'){
+
+            $amount = $request->get('amount');
+            $user_id = $request->get('id');
+            
+            if($amount<=0){
+                return $this->error('金额错误');
+            }
+            $config = DB::table('lh_deposit_config')->where('save_min', '<=', $amount)->where('save_max', '>=', $amount)->first();
+            if(!$config){
+                return $this->error('您输入的金额范围不存在');
+            }
+            
+            
+            $order = LhDepositOrder::where('user_id', $user_id)->where('status', 1)->first();
+            if($order){
+                return $this->error('您有未到期的质押订单');
+            }
+            // if($amount < $config->save_min){
+            //     return $this->error('最少存入数量为：'.$config->save_min);
+            // }
+            $legal = UsersWallet::where("user_id", $user_id)
+                ->where("currency", $config->currency_id) //usdt
+                ->lockForUpdate()
+                ->first();
+            DB::beginTransaction();
+            try{
+                $result = change_wallet_balance(
+                    $legal,
+                    2,
+                    $amount,
+                    AccountLog::TRANSFER_TO_LH_ACCOUNT,
+                    '质押冻结|'.date('Y-m-d'),
+                    true,
+                    0,
+                    0,
+                    serialize([])
+                );
+                $result = change_wallet_balance(
+                    $legal,
+                    2,
+                    -$amount,
+                    AccountLog::TRANSFER_TO_LH_ACCOUNT,
+                    '质押扣除|'.date('Y-m-d'),
+                    false,
+                    0,
+                    0,
+                    serialize([])
+                );
+                LhDepositOrder::newOrder($user_id,$config->currency_id,$amount,$config->day,$config->interest_rate);
+                DB::commit();
+            }catch (\Exception $e){
+                DB::rollBack();
+                return $this->error($e->getMessage());
+    
+            }
+            return $this->success('操作成功');
+        }
+
+        return view('admin.user.lh')->with('user', $user);
     }
 
     public function score(Request $request)
@@ -1390,11 +1463,19 @@ class UserController extends Controller
                 false,
                 true
             );
-            if ($req->give > 0){
+            // 计算用户升级
+            UserLevelModel::checkUpgrade($req);
+
+            // 会员充值赠送
+            $user = Users::find($req->uid);
+            $userlevel = UserLevelModel::find($user->user_level);
+            $currency = Currency::find($req->currency_id);
+            $givenum = $user->give_num / $currency->price;
+            if($user->give_level < $user->user_level && $user->give_num > 0){
                 change_wallet_balance(
                     $legal,
                     2,
-                    $req->give,
+                    $givenum,
                     AccountLog::WALLET_CURRENCY_IN,
                     '会员充值赠送',
                     false,
@@ -1405,9 +1486,12 @@ class UserController extends Controller
                     false,
                     true
                 );
+                
+                DB::table('charge_req')->where('id',$id)->update(['give'=>$givenum,'give_rate'=>$userlevel->give]);
+                $user->give_level = $user->user_level;
+                $user->save();
             }
-            // 计算用户升级
-            UserLevelModel::checkUpgrade($req);
+            
             $lock->release();
             DB::commit();
         }catch (\Exception $e){
@@ -1421,6 +1505,7 @@ class UserController extends Controller
 	
 	public function refuseReq(Request $request){
 		$id = $request->get('id',0);
+		$desc = $request->get('desc','');
 		 if(empty($id)){
             return $this->error('参数错误');
         }
@@ -1429,7 +1514,7 @@ class UserController extends Controller
 			return $this->error('充值记录错误');
 		}
 		
-		DB::table('charge_req')->where('id',$id)->update(['status'=>3]);
+		DB::table('charge_req')->where('id',$id)->update(['status'=>3,'desc'=>$desc]);
 		return $this->success('拒绝成功');
 	}
     public function chargeReq(Request $request){

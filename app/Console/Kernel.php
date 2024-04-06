@@ -41,10 +41,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('follow')->everyMinute()->withoutOverlapping(); //处理跟随者 跟单逻辑
-        $schedule->command('remove_queue')->hourly()->withoutOverlapping(); //移除积压
-        $schedule->command('lhdispatch_interest')->dailyAt('00:01')->appendOutputTo('./storage/logs/lhdispatch_interest.log');  // 锁仓派息
-        
+        // echo date('Y-m-d H:i:s').'------------------start-----------------------'.PHP_EOL;
+        // $schedule->command('test')->everyMinute();
+        // echo '内置任务开始运行' . PHP_EOL;
+        // $schedule->command('follow')->everyMinute()->withoutOverlapping(); //处理跟随者 跟单逻辑
+        // $schedule->command('remove_queue')->hourly()->withoutOverlapping(); //移除积压
+        // $schedule->command('lhdispatch_interest')->dailyAt('00:01')->appendOutputTo('./storage/logs/lhdispatch_interest.log');  // 锁仓派息
+        // echo '内置任务运行结束' . PHP_EOL;
         /**
         $schedule->command('update_hash_status')->everyMinute()->withoutOverlapping(); //更新哈希值状态
         $schedule->command('lever:overnight')->dailyAt('00:01')->appendOutputTo('./storage/logs/lever_overnight.log'); //收取隔夜费
@@ -58,7 +61,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('insurance_money')->dailyAt('00:01')->appendOutputTo('./storage/logs/insurance_money.log'); //持币生息
         $schedule->command('return_service_charge')->dailyAt('00:02')->appendOutputTo('./storage/logs/return_service_charge.log'); //返还保险交易手续费
          */
-
+        // echo date('Y-m-d H:i:s').'------------------end-----------------------'.PHP_EOL;
     }
 
     /**

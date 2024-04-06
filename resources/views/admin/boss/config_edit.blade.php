@@ -17,7 +17,7 @@
         <div class="layui-form-item">
 			<label for="currency_id" class="layui-form-label">币种</label>
 			<div class="layui-input-block">
-			      <input type="text" disabled="disabled" name="currency_name" id="name" value="{{$model->currency_name}}" class="layui-input">
+			      <input type="text" name="currency_name" id="name" value="{{$model->currency_name}}" class="layui-input"  disabled>
 			</div>
 		</div>
         <div class="layui-form-item">
@@ -27,21 +27,27 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">利息(百分比)</label>
+            <label class="layui-form-label">日利息(百分比)</label>
             <div class="layui-input-block">
                 <input type="text" name="rate" id="rate" required autocomplete="off" placeholder="" class="layui-input" value="{{$model->interest_rate}}">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">文案</label>
+            <label class="layui-form-label">储蓄名称</label>
             <div class="layui-input-block">
                 <input type="text" name="intro" id="intro" required autocomplete="off" placeholder="" class="layui-input" value="{{$model->intro}}">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">最小值</label>
+            <label class="layui-form-label">最小存币数</label>
             <div class="layui-input-block">
                 <input type="text" name="save_min" id="save_min"  autocomplete="off" placeholder="" class="layui-input" value="{{$model->save_min}}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">最小存币数</label>
+            <div class="layui-input-block">
+                <input type="text" name="save_max" id="save_max"  autocomplete="off" placeholder="" class="layui-input" value="{{$model->save_max}}">
             </div>
         </div>
         <div class="layui-form-item">

@@ -1,4 +1,3 @@
-
 <?php $__env->startSection('page_head'); ?>
 
 <?php $__env->stopSection(); ?>

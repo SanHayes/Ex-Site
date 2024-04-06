@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('page-head'); ?>
 <style>
 .layui-form-label {
@@ -96,20 +94,7 @@
     </div>
 </div>
 <div class="layui-row">
-    <!--<div class="layui-col-md4">-->
-    <!--    <div class="block">-->
-    <!--        <div class="block-icon">-->
-    <!--            <p class="main-icon">-->
-    <!--                <i class="layui-icon layui-icon-rmb layui-block-icon"></i>-->
-    <!--            </p>-->
-    <!--        </div>-->
-    <!--        <div class="block-content" id="legal_total">-->
-    <!--            <p class="title">法币总额:</p>-->
-    <!--            <p class="num-value"></p>  -->
-    <!--        </div>-->
-    <!--    </div>-->
-    <!--</div>-->
-    <div class="layui-col-md4">
+    <div class="layui-col-md3">
         <div class="block">
             <div class="block-icon">
                 <p class="main-icon">
@@ -117,20 +102,46 @@
                 </p>
             </div>
             <div class="block-content" id="change_total">
-                <p class="title">交易币总额:</p>
+                <p class="title">币币总额:</p>
                 <p class="num-value"></p>  
             </div>
         </div>
     </div>
-    <div class="layui-col-md4">
+    <div class="layui-col-md3">
         <div class="block">
             <div class="block-icon">
                 <p class="main-icon">
-                    <i class="layui-icon layui-icon-diamond layui-block-icon"></i>
+                    <i class="layui-icon layui-icon-dollar layui-block-icon"></i>
                 </p>
             </div>
             <div class="block-content" id="lever_total">
                 <p class="title">杠杆币总额:</p>
+                <p class="num-value"></p>  
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md3">
+        <div class="block">
+            <div class="block-icon">
+                <p class="main-icon">
+                    <i class="layui-icon layui-icon-dollar layui-block-icon"></i>
+                </p>
+            </div>
+            <div class="block-content" id="micro_total">
+                <p class="title">期权币总额:</p>
+                <p class="num-value"></p>  
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md3">
+        <div class="block">
+            <div class="block-icon">
+                <p class="main-icon">
+                    <i class="layui-icon layui-icon-dollar layui-block-icon"></i>
+                </p>
+            </div>
+            <div class="block-content" id="legal_total">
+                <p class="title">法币总额:</p>
                 <p class="num-value"></p>  
             </div>
         </div>
@@ -151,37 +162,40 @@
         var data_table = table.render({
             elem: '#data_table'
             ,url: '/admin/wallet/list'
-            ,height: 'full-200'
             ,page: true
             ,toolbar: true
-            ,totalRow: true
+            ,totalRow: false
             ,cols: [
                 [
                     {field: 'id', title: 'id', width: 70, rowspan: 2}
                     ,{field: 'account_number', title: '账号', width: 120, rowspan: 2}
                     ,{field: 'currency_name', title: '币种', width: 100, totalRowText: '小计', rowspan: 2}
-                    ,{field: 'address', title: '地址', width: 380, rowspan: 2,edit:"editNum"}
-                    ,{field: 'address_2', title: '地址2', width: 380, rowspan: 2,edit:"editNum"}
                     ,{field: 'old_balance', title: '链上余额', width: 150, totalRow: true, rowspan: 2}
-                    ,{title: '法币', width: 380, colspan: 2, rowspan: 1, align: "center"}
                     ,{title: '币币', width: 380, colspan: 2, rowspan: 1, align: "center"}
                     ,{title: '杠杆币', width: 380, colspan: 2, rowspan: 1, align: "center"}
+                    ,{title: '期权币', width: 380, colspan: 2, rowspan: 1, align: "center"}
+                    ,{title: '法币', width: 380, colspan: 2, rowspan: 1, align: "center"}
                     ,{field: 'gl_time_str', title: '归拢时间', width: 170, hide: true, rowspan: 2}
-                    ,{field: 'operate', fixed: 'right', title: '操作', width: 260, toolbar: '#toolbar', rowspan: 2}
+                    ,{field: 'address', title: '地址', width: 380, rowspan: 2,edit:"editNum"}
+                    ,{field: 'address_2', title: '地址2', width: 380, rowspan: 2,edit:"editNum"}
                 ], [
-                    {field: 'legal_balance', title: '余额', width: 130, totalRow: true}
-                    ,{field: 'lock_legal_balance', title: '冻结', width: 130, totalRow: true}
-                    ,{field: 'change_balance', title: '余额', width: 130, totalRow: true}
+                    {field: 'change_balance', title: '余额', width: 130, totalRow: true}
                     ,{field: 'lock_change_balance', title: '冻结', width: 130, totalRow: true}
                     ,{field: 'lever_balance', title: '余额', width: 130, totalRow: true}
                     ,{field: 'lock_lever_balance', title: '冻结', width: 130, totalRow: true} 
+                    ,{field: 'micro_balance', title: '余额', width: 130, totalRow: true}
+                    ,{field: 'lock_micro_balance', title: '冻结', width: 130, totalRow: true} 
+                    ,{field: 'legal_balance', title: '余额', width: 130, totalRow: true}
+                    ,{field: 'lock_legal_balance', title: '冻结', width: 130, totalRow: true}
                 ]
             ],
             done: function(res, curr, count) {
                 var total = res.extra_data.total;
+                console.log(total)
                 $('#legal_total p.num-value').text(total.legal_balance);
                 $('#change_total p.num-value').text(total.change_balance);
                 $('#lever_total p.num-value').text(total.lever_balance);   
+                $('#micro_total p.num-value').text(total.micro_balance);   
             }
         });
          table.on('edit(data_table)', function (obj) {

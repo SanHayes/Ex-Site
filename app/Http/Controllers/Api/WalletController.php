@@ -17,6 +17,7 @@ use App\Ltc;
 use App\LtcBuy;
 use App\TransactionComplete;
 use App\NewsCategory;
+use App\CoinTrade;
 use App\Address;
 use App\AccountLog;
 use App\Setting;
@@ -66,12 +67,12 @@ class WalletController extends Controller
             'all_profit' => '0.00',
             'profit_margin' => '0.00',
         ];
-        $profits['today_profit'] = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->sum('fact_profits');
-        $profits['all_profit'] = MicroOrder::where('user_id', $user_id)->sum('fact_profits');
+        $profits['today_profit'] = number_format(MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->sum('fact_profits'), 2);
+        $profits['all_profit'] = number_format(MicroOrder::where('user_id', $user_id)->sum('fact_profits'), 2);
         $profit = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->where('profit_result', '>', 0)->count();
         $allnum = MicroOrder::where('user_id', $user_id)->whereDate('complete_at', today())->count();
         if($profit > 0){
-            $profits['profit_margin'] = $profit / $allnum * 100;
+            $profits['profit_margin'] = number_format($profit / $allnum * 100, 2);
         }
         
         $legal_wallet['balance'] = UsersWallet::where('user_id', $user_id)
@@ -332,9 +333,9 @@ class WalletController extends Controller
             	'uid' => $user_id,
             	'currency_id' => $currency_id,
             	'amount' => $amount,
-            	'give' => $give,
+            	'give' => 0,
             	'account_name' => $nick_name,
-            	'give_rate' => $give_rate,
+            	'give_rate' => 0,
             	'user_account' => $account,
             	'currency_name' => $currency -> name,
             	'sub_type' => $sub_type,
@@ -606,6 +607,18 @@ class WalletController extends Controller
         if (empty($user_id) || empty($currency_id)) {
             return $this->error('参数错误');
         }
+        $CoinTrade_data = CoinTrade::where('u_id', $user_id)->where('currency_id', $currency_id)->get();
+        $CoinTrade_amount = $trade_amount = 0;
+        foreach($CoinTrade_data as $item){
+            if($item['type'] == 1){
+                $trade_amount += $item['trade_amount'];
+                $CoinTrade_amount += ($item['target_price']*$item['trade_amount']);
+            }else{
+                $trade_amount -= $item['trade_amount'];
+                $CoinTrade_amount -= ($item['target_price']*$item['trade_amount']);
+            }
+        }
+        
         $ExRate = Setting::getValueByKey('USDTRate', 6.5);
         if ($type == 'legal') {
             $wallet = UsersWallet::where('user_id', $user_id)->where('currency', $currency_id)->first(['id', 'currency', 'legal_balance', 'lock_legal_balance','address']);
@@ -629,6 +642,7 @@ class WalletController extends Controller
             $wallet->is_charge = false;
         }
 
+        $wallet->profit_or_loss = number_format(($trade_amount * $wallet['usdt_price']) - $CoinTrade_amount,4);
         $wallet->coin_trade_fee = Setting::getValueByKey('COIN_TRADE_FEE');
         return $this->success($wallet);
     }
@@ -652,9 +666,8 @@ class WalletController extends Controller
             $list = $list->whereHas('walletLog',function($query) use($type){
               $query->where('balance_type',$type);
             });
-      }
-        $list = $list->orderBy('id', 'desc')->paginate($limit);
-
+        }
+        $list = $list->whereNotIn('type', [21, 24, 26])->orderBy('id', 'desc')->paginate($limit);
         $is_open_CTbi = Setting::where("key", "=", "is_open_CTbi")->first()->value;
 
         return $this->success(array(

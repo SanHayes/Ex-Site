@@ -42,7 +42,7 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label">锁仓挖矿取消订单手续费%</label>
+                                        <label class="layui-form-label">质押挖矿取消订单手续费%</label>
                                         <div class="layui-input-inline">
                                             <input class="layui-input" lay-verify="1" placeholder="" name="cancel_deposit_fee"
                                                    type="text" onkeyup=""
@@ -293,7 +293,7 @@
                             </div>
                         </div>
                         <div class="layui-form-item">
-                            <label class="layui-form-label">提款验证是否开启</label>
+                            <label class="layui-form-label">提款密码是否开启</label>
                             <div class="layui-input-block">
                                 <div class="layui-input-inline">
                                     <input type="radio" name="tk_radio" value="1" title="是" <?php if(isset($setting['tk_radio'])): ?> <?php echo e($setting['tk_radio'] == 1 ? 'checked' : ''); ?> <?php endif; ?> >

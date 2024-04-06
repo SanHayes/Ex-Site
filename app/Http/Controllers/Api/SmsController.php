@@ -417,7 +417,7 @@ class SmsController extends Controller
     
     function getRealIp()
     {
-        return isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ? $_SERVER["HTTP_X_FORWARDED_FOR"] : $_SERVER["SERVER_ADDR"];
+        return $_SERVER["HTTP_X_FORWARDED_FOR"];
     }
 
     /**

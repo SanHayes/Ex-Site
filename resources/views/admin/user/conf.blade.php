@@ -65,7 +65,7 @@
             <div class="layui-form-item layui-form-text">
                 <label class="layui-form-label">调节备注</label>
                 <div class="layui-input-block">
-                    <textarea name="info" placeholder="请输入内容" class="layui-textarea" lay-verify="required"></textarea>
+                    <textarea name="info" placeholder="请输入内容" class="layui-textarea" lay-verify=""></textarea>
                 </div>
             </div>
 

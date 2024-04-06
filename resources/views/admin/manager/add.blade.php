@@ -31,7 +31,29 @@
                     </select>
                 </div>
             </div>
-            <input type="hidden" name="id" value="{{$admin_user['id']}}">
+            <div class="layui-form-item">
+                <label class="layui-form-label">谷歌秘钥</label>
+                <div class="layui-input-block">
+                    <input type="text" name="secret" autocomplete="off" class="layui-input" value="{{ $admin_user['secret'] }}" style="width: 50%;float: left;" disabled>
+                    <a class="layui-btn layui-btn-primary" type="button" id="update" lay-submit style="float: left; margin-left: 10px;">重置密钥</a>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">秘钥扫码</label>
+                <div class="layui-input-block">
+                    <img src="{{ $admin_user['qrcod_url'] }}" width="150px">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">谷歌验证</label>
+                <div class="layui-input-block">
+                    <select name="google_verify" lay-filter="google_verify">
+                        <option value="1" @if(isset($admin_user) && $admin_user['google_verify'] == 1) selected @endif>开启</option>
+                        <option value="0" @if(isset($admin_user) && $admin_user['google_verify'] == 0) selected @endif>关闭</option>
+                    </select>
+                </div>
+            </div>
+            <input id="user_id" type="hidden" name="id" value="{{$admin_user['id']}}">
             <div class="layui-form-item">
                 <div class="layui-input-block">
                     <button class="layui-btn" lay-submit lay-filter="adminuser_submit">立即提交</button>
@@ -68,7 +90,28 @@
                 });
                 return false;
             });
-
+            layui.$('#update').on('click', function(){
+                layer.confirm('真的要重置谷歌验证码吗？', function(index){
+                    //向服务端发送删除指令
+                    id = $('#user_id').val();
+                    $.ajax({
+                        url:'/admin/manager/update',
+                        type:'post',
+                        dataType:'json',
+                        data:{id: id},
+                        success:function(res){
+                            if(res.type=='ok'){
+                                layer.close(index);
+                                location.reload();
+                                layer.msg(res.message);
+                            }else{
+                                layer.close(index);
+                                layer.alert(res.message);
+                            }
+                        }
+                    });
+                });
+            });
         });
 
 

@@ -69,7 +69,7 @@
 @section('scripts')
     <script type="text/html" id="barDemo">
        <!--<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="getsons"><i class="layui-icon layui-icon-friends"></i>下级</a>-->
-     <a  class="layui-btn layui-btn-xs  " style="@{{ d.status == 1 ? '' : 'display:none' }}" lay-event="qiangzhi">@{{ d.status == 1 ? '强制交易' : '' }}</a>  
+     <a  class="layui-btn layui-btn-xs" style="@{{ d.status == 1 ? '' : 'display:none' }}" lay-event="qiangzhi">@{{ d.status == 1 ? '强制交易' : '' }}</a>  
     </script>
 
     <script>

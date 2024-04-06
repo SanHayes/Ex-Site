@@ -27,25 +27,31 @@
         <div class="layui-form-item">
             <label class="layui-form-label">期限</label>
             <div class="layui-input-block">
-                <input type="text" name="day" id="day" required autocomplete="off" placeholder="" class="layui-input">
+                <input type="text" name="day" id="day" required autocomplete="off" placeholder="" class="layui-input" value="30" disabled>
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">利息(百分比)</label>
+            <label class="layui-form-label">日利息(百分比)</label>
             <div class="layui-input-block">
                 <input type="text" name="rate" id="rate" required autocomplete="off" placeholder="" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">文案</label>
+            <label class="layui-form-label">储蓄名称</label>
             <div class="layui-input-block">
                 <input type="text" name="intro" id="intro" required autocomplete="off" placeholder="" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">最小值</label>
+            <label class="layui-form-label">最小存币数</label>
             <div class="layui-input-block">
                 <input type="text" name="save_min" id="save_min"  autocomplete="off" placeholder="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">最大存币数</label>
+            <div class="layui-input-block">
+                <input type="text" name="save_max" id="save_max"  autocomplete="off" placeholder="" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item">

@@ -38,18 +38,19 @@ class UserLevelModel extends Model
             ->where('charge_req.status','2')
             ->select('charge_req.*','currency.price','currency.rmb_relation')
             ->get();
-        $cny = 0;
+        $usdt = 0;
         foreach ($list as $item) {
-            $c = $item->amount;
-            // $c = ($item->amount + $item->give) * $item-> price * $item->rmb_relation;
-            $cny += $c;
+            $u = $item->amount * $item->price;
+            $usdt += $u;
         }
         // 查找级别
-        $level = self::where('amount','<=',$cny)
+        $level = self::where('amount','<=',$usdt)
             ->orderBy('amount', 'desc')
             ->first();
         if ($level && $user->user_level < $level->id){ // 升级
             $user->user_level = $level->id;
+            $user->charge_req = $usdt;
+            $user->give_num = ($usdt - $level->amount > 0) ? ($usdt - $level->amount) * ($level->give / 100) : 0;
             $user->save();
             DB::table('user_level_log')->insert([
                 "user_id" => $user->id,

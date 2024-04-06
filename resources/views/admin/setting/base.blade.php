@@ -43,7 +43,7 @@
                                         </div>
                                     </div>
                                     <div class="layui-inline">
-                                        <label class="layui-form-label">锁仓挖矿取消订单手续费%</label>
+                                        <label class="layui-form-label">质押挖矿取消订单手续费%</label>
                                         <div class="layui-input-inline">
                                             <input class="layui-input" lay-verify="1" placeholder="" name="cancel_deposit_fee"
                                                    type="text" onkeyup=""

@@ -97,6 +97,10 @@ class AdminAuthenticate
             if ($v['action'] == 'admin/wallet/index') {
                 $arr[] = 'admin/wallet/list';
             }
+            if ($v['action'] == 'admin/coin_trade/index') {
+                $arr[] = 'admin/coin_trade/list';
+                $arr[] = 'admin/coin_trade/close';
+            }
         }
         // print_r($arr);exit();
 

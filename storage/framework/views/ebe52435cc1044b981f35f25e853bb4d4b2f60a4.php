@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('page-head'); ?>
 <style>
     [hide] {

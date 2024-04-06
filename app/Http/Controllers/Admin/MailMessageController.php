@@ -129,7 +129,7 @@ class MailMessageController extends Controller
             $this->error("信息未找到");
         }
         try {
-            $userreal -> status = 1;
+            $userreal->status = 1;
             $userreal->save();
             return $this->success('发送成功');
         } catch (\Exception $ex) {

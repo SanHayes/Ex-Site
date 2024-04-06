@@ -27,6 +27,15 @@ Route::group(['middleware' => ['lang']], function () {
         //        return view('admin/login');
         return view('manages/login');
     });
+    
+    Route::get('GoogleAuthenticator',function(){
+        return GoogleAuthenticator();
+    });
+    Route::get('GoogleVerify',function(Request $request){
+        $secret = session()->get('admin_secret');
+        $code = $request->input('code','');
+        return GoogleVerify($secret, $code);
+    });
 
 //      Route::get('/login', function () {
 //          session()->put('admin_username', '');
@@ -606,15 +615,17 @@ Route::group(['middleware' => ['lang']], function () {
         Route::post('/currency/project/add', 'Admin\CurrencyProjectController@newProject');
         Route::post('/currency/project/edit', 'Admin\CurrencyProjectController@editProject');
         Route::get('/currency/project/detail', 'Admin\CurrencyProjectController@projectDetail');
+        //kuang
         Route::get('/currency/deposit/{currency_id}', 'Admin\CurrencyDepositController@configView');
         Route::get('/currency/deposit/{currency_id}/list', 'Admin\CurrencyDepositController@currencyConfig');
         Route::get('/currency/deposit_config', 'Admin\CurrencyDepositController@addConfigView');
         Route::get('/currency/deposit_order', 'Admin\CurrencyDepositController@orderView');
         Route::get('/currency/deposit_order/list', 'Admin\CurrencyDepositController@orderList');
+        
         Route::post('/currency/add_deposit_config', 'Admin\CurrencyDepositController@newConfig');
         Route::post('/currency/edit_deposit_config', 'Admin\CurrencyDepositController@editConfig');
         Route::post('/currency/delete_deposit_config', 'Admin\CurrencyDepositController@deleteConfig');
-        Route::get('/coin_trade', 'Admin\CoinTradeController@index');
+        Route::get('/coin_trade/index', 'Admin\CoinTradeController@index');
         Route::get('/coin_trade/list', 'Admin\CoinTradeController@tradeList');
         Route::post('/coin_trade/close', 'Admin\CoinTradeController@finishTrade');
         Route::get('/safe/verificationcode', 'Admin\DefaultController@getVerificationCode');
@@ -726,6 +737,8 @@ Route::group(['middleware' => ['lang']], function () {
         // 用户积分调节
         Route::get('user/score', 'Admin\UserController@score');
         Route::post('user/score', 'Admin\UserController@score');
+        Route::get('user/lh', 'Admin\UserController@lh');
+        Route::post('user/lh', 'Admin\UserController@lh');
 
         // 用户银行卡
         Route::get('user/cash_info', 'Admin\UserController@cashInfo');
@@ -793,6 +806,7 @@ Route::group(['middleware' => ['lang']], function () {
         Route::get('/manager/add', 'Admin\AdminController@add');
         Route::post('/manager/add', 'Admin\AdminController@postAdd');
         Route::post('/manager/delete', 'Admin\AdminController@del');
+        Route::post('/manager/update', 'Admin\AdminController@update');//重置谷歌验证码
         Route::get('/manager/manager_roles', function () {
             return view('admin.manager.admin_roles');
         });

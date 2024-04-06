@@ -71,7 +71,8 @@ class CoinTradeController extends Controller
        $list = CoinTrade::where('u_id',$user_id)
            ->where($where)
            ->orderBy('id','desc')
-           ->skip($limit*($page-1))->take($limit)->get();
+           ->paginate($limit);
+        //   ->skip($limit*($page-1))->take($limit)->get();
        foreach($list as &$li){
            $li['symbol'] = Currency::getNameById($li->currency_id).'/'.Currency::getNameById($li->legal_id);
        }

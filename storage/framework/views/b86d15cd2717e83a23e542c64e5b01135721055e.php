@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('page-head'); ?>
 
 <?php $__env->stopSection(); ?>
@@ -18,7 +16,7 @@
 <?php $__env->stopSection(); ?>
 <?php $__env->startSection('scripts'); ?>
     <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">编辑</a>
         <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>
     </script>
     <script>
@@ -50,15 +48,15 @@
                 ,toolbar: 'default'
                 ,page: true
                 ,cols: [[
-                    {type: 'radio'}
-                    ,{field: 'id', title: 'id', width: 70}
-                    ,{field: 'currency_name', title: '交易币', width: 80}
-                    ,{field: 'day', title: '期限', width: 80}
-                    ,{field: 'interest_rate', title: '利息（%）', width: 150}
-                    ,{field: 'intro', title: '文案', width: 150}
-                    ,{field: 'save_min', title: '最少存币数', width: 300}
-                    ,{field: 'created_at', title: '创建时间', width: 200}
-                    ,{fixed: 'right', title: '操作', width: 190, align: 'center', toolbar: '#barDemo'}
+                    {field: 'id', title: 'id'}
+                    ,{field: 'currency_name', title: '币种'}
+                    ,{field: 'intro', title: '储蓄名称'}
+                    ,{field: 'day', title: '储蓄期限'}
+                    ,{field: 'interest_rate', title: '日利息（%）'}
+                    ,{field: 'save_min', title: '最小存币数'}
+                    ,{field: 'save_max', title: '最大存币数'}
+                    ,{field: 'created_at', title: '创建时间'}
+                    ,{fixed: 'right', title: '操作', align: 'center', toolbar: '#barDemo'}
                 ]]
             });
             table.on('tool(data_table)', function (obj) {
@@ -87,17 +85,12 @@
                     });
                 }
                  if(layEvent === 'edit'){
-                     if (selected.data.length != 1) {
-                            layer.msg('只能编辑一个质押配置');
-                            return false;
-                        }
-                        id = selected.data[0].id
-                        var data=selected.data[0];
+                        id = data.id;
                         layer.open({
                             title: '编辑质押'
                             ,type: 2
                             ,content: '/admin/deposit/config/edit/view?id='+id
-                            ,area: ['600px', '380px']
+                            ,area: ['600px', '500px']
                         });
                     
                  }

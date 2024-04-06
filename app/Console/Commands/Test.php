@@ -13,13 +13,13 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 class Test extends Command
 {
-    protected $signature = "Testtest";
+    protected $signature = "test";
     protected $description = "测试";
     public function handle()
     {
-        $this->comment("start");
-        Users::rebate(357, 357, 3, 100, 1, 2);
-        $this->comment("end");
+       echo '-----------------------------------------';
+       echo '开始我的工作'.date('Y-m-d H:i:s');
+       echo '结束我的工作'.date('Y-m-d H:i:s');
     }
 }
 ?>

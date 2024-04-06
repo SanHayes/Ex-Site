@@ -32,6 +32,7 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="lock_user">锁定</a>
     
     <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="lh">储蓄</a>
     <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="score">积分</a>
     <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="licai" hide>理财账户</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete" >删除</a>
@@ -100,6 +101,7 @@
                 ,{field:'is_bind_box_author', title:'开通盲盒作者', minWidth:120, templet: '#bind_box'}
                 ,{field:'is_trader', title:'是否为交易员', minWidth:120, templet: '#is_trader'}
                 ,{field:'time', title:'注册时间', minWidth:150}
+                ,{field:'last_login_ip', title:'登录IP', minWidth:150}
                 ,{fixed: 'right', title: '操作', minWidth:330, align: 'center', toolbar: '#barDemo'}
             ]]
         });
@@ -255,6 +257,15 @@
                     title: '积分调节'
                     ,type: 2
                     ,content: '/admin/user/score?id=' + data.id
+                    ,maxmin: true
+                    ,area:["80%", "80%"],
+                });
+                // layer.full(index);
+            }else if (layEvent == 'lh') {
+                var index = layer.open({
+                    title: '智能储蓄'
+                    ,type: 2
+                    ,content: '/admin/user/lh?id=' + data.id
                     ,maxmin: true
                     ,area:["80%", "80%"],
                 });
