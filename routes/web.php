@@ -129,7 +129,7 @@ Route::group(['middleware' => ['lang']], function () {
         header('Content-Type: ' . $qrCode->getContentType());
         echo $qrCode->writeString();
     });
-    // Route::any('/api/upload2', 'Api\DefaultController@upload2');
+    Route::any('/api/upload2', 'Api\DefaultController@upload2');
     Route::any('/api/uploadNFT', 'Api\DefaultController@uploadNFT');
 
 
