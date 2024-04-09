@@ -119,7 +119,8 @@
 
 @section('scripts')
 
-  <script src="{{URL("winadmin/lib/layui/layui.js")}}"></script>
+  <script src="{{URL("layuiadmin/layui/jquery-3.2.1.min.js")}}"></script>
+  <script src="{{URL("layuiadmin/layui/layui.js")}}"></script>
   <script>
     var bbjy = '{{URL("static/audio/bbjy.mp3")}}';
     var hyjy = '{{URL("static/audio/hyjy.mp3")}}';
@@ -135,7 +136,71 @@
     var pay_success = '{{URL("static/audio/pay_success.mp3")}}';
 
     var tips_url = '{{url('admin/tips/tips')}}';
-
+    $.ajax({
+      url:tips_url + '?type=3',
+      type:'GET',
+      data:{},
+      dataType:'JSON',
+      success:function(res){
+        if (res.code == 100){
+          layer.msg("您有新的订单,请及时处理", {time: 3000, shift: 5,offset:"tc"});
+          var audio = new Audio(qqjy);
+          audio.play();
+        }
+      }
+    });
+    $.ajax({
+      url:tips_url + '?type=6',
+      type:'GET',
+      data:{},
+      dataType:'JSON',
+      success:function(res){
+        if (res.code == 100){
+          layer.msg("您有新的充值订单,请及时处理", {time: 3000, shift: 5,offset:"tc"});
+          var audio = new Audio(cz);
+          audio.play();
+        }
+      }
+    });
+    $.ajax({
+      url:tips_url + '?type=7',
+      type:'GET',
+      data:{},
+      dataType:'JSON',
+      success:function(res){
+        if (res.code == 100){
+          layer.msg("您有新的身份认证,请及时处理", {time: 3000, shift: 5,offset:"tc"});
+          var audio = new Audio(sfrz);
+          audio.play();
+        }
+      }
+    });
+    $.ajax({
+      url:tips_url + '?type=8',
+      type:'GET',
+      data:{},
+      dataType:'JSON',
+      success:function(res){
+        if (res.code == 100){
+          layer.msg("您有新的提现申请,请及时处理", {time: 3000, shift: 5,offset:"tc"});
+          var audio = new Audio(tksq);
+          audio.play();
+        }
+      }
+    });
+    $.ajax({
+      url:tips_url + '?type=99',
+      type:'GET',
+      data:{},
+      dataType:'JSON',
+      success:function(res){
+        if (res.code == 100){
+          layer.msg("支付通道有新订单成功,请及时处理", {time: 3000, shift: 5,offset:"tc"});
+          var audio = new Audio(pay_success);
+          audio.play();
+        }
+      }
+    });
     // 订单轮询
     setInterval(function () {
         
