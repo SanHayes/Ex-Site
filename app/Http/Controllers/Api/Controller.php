@@ -38,7 +38,7 @@ class Controller extends BaseController
      */
     public function error($message)
     {
-        $lang_arr = ['kr' => 'kor', 'hk' => 'cht', 'jp' => 'jp', 'en' => 'en', 'spa' => 'spa','th'=>'th'];
+        $lang_arr = ['kr' => 'kor', 'hk' => 'cht', 'jp' => 'jp', 'en' => 'en', 'spa' => 'spa', 'th'=>'th', 'zh'=>'zh'];
         $lang = key_exists($this->language, $lang_arr) ? $lang_arr[$this->language] : 'en';
         
         header('Content-Type:application/json');
@@ -48,7 +48,7 @@ class Controller extends BaseController
         header('Access-Control-Allow-Headers:x-requested-with,content-type,Authorization');
         if (is_string($message)){
             $message=str_replace('massage.', '', __("massage.$message"));
-            if($this->hasChinese($message)){
+            if($this->hasChinese($message) && $lang != 'zh'){
                 $message = mtranslate($message, $lang);
             }
         }
@@ -63,7 +63,7 @@ class Controller extends BaseController
      */
     public function success($message,$type=0)
     {
-        $lang_arr = ['kr' => 'kor', 'hk' => 'cht', 'jp' => 'jp', 'en' => 'en', 'spa' => 'spa','th'=>'th'];
+        $lang_arr = ['kr' => 'kor', 'hk' => 'cht', 'jp' => 'jp', 'en' => 'en', 'spa' => 'spa', 'th'=>'th', 'zh'=>'zh'];
         $lang = key_exists($this->language, $lang_arr) ? $lang_arr[$this->language] : 'en';
         
         header('Content-Type:application/json');
@@ -73,7 +73,7 @@ class Controller extends BaseController
         header('Access-Control-Allow-Headers:x-requested-with,content-type,Authorization');
         if (is_string($message)&&$type==0){
             $message=str_replace('massage.', '', __("massage.$message"));
-            if($this->hasChinese($message)){
+            if($this->hasChinese($message) && $lang != 'zh'){
                 $message = mtranslate($message, $lang);
             }
         }
