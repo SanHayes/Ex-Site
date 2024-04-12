@@ -1,4 +1,4 @@
-@extends('agent.layadmin')
+@extends('admin._layoutNew')
 
 @section('page-head')
 
