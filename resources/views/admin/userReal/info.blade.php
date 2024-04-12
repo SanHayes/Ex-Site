@@ -56,14 +56,14 @@
                 @endif
             </div>
         </div>
-         <div class="layui-form-item layui-form-text">
+<!--          <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">手持身份证照片</label>
-            <div class="layui-input-block">
+            <div class="layui-input-block"> -->
                <!--<a href="">查看</a>-->
                 <!--<img src="@if(!empty($result->hand_pic)){{$result->hand_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->hand_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;">-->
                 
-            </div>
-        </div> 
+<!--             </div>
+        </div>  -->
         
         
     </form>
