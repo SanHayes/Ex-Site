@@ -836,7 +836,7 @@ class MarketHour extends Model
               
                 // unset($data['vol'], $data['amount']); //不影响成交数量
                 
-                self::setEsearchMarket($data);
+                // self::setEsearchMarket($data);
             } else {
                 //dd($result);
                 //拿不到数据,可能是还没有也有可能是程序错误,为了保险建议不处理
