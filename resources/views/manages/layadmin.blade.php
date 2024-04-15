@@ -15,6 +15,7 @@
 <body class="">
     @yield('page-content')
 </body>
+<script src="/js/jquery-3.2.1.min.js"></script>
 <script src="/layuiadmin/layui/layui.js"></script>
 <script>
     /^http(s*):\/\//.test(location.href) || alert('请先部署到 localhost 下再访问');

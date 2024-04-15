@@ -119,9 +119,10 @@
 
 @section('scripts')
 
-  <script src="{{URL("layuiadmin/layui/jquery-3.2.1.min.js")}}"></script>
-  <script src="{{URL("layuiadmin/layui/layui.js")}}"></script>
   <script>
+  layui.use('layer', function () {
+    var layer = layui.layer;
+
     var bbjy = '{{URL("static/audio/bbjy.mp3")}}';
     var hyjy = '{{URL("static/audio/hyjy.mp3")}}';
     var qqjy = '{{URL("static/audio/qqjy.mp3")}}';
@@ -284,10 +285,7 @@
         });
       }, 15000);
     },30000);
-
-
-
-
+  });
   </script>
 
 @endsection
