@@ -265,18 +265,18 @@ class MicroTradeLogic
 
                     $item->refresh();
                     if ($item->type == MicroOrder::TYPE_RISE) {
-                        $item->end_price = $price_range['max_price'];
+                        $item->end_price = $item->open_price + mt_rand(1000,5000)/1000;//$price_range['max_price'];
                     } elseif ($item->type == MicroOrder::TYPE_FALL) {
-                        $item->end_price = $price_range['min_price'];
+                        $item->end_price = $item->open_price - mt_rand(1000,5000)/1000;//$price_range['min_price'];
                     }
                     $item->save();
                 } elseif ($pre_profit_result == -1) {
 
                     $item->refresh();
                     if ($item->type == MicroOrder::TYPE_RISE) {
-                        $item->end_price = $price_range['min_price'];
+                        $item->end_price = $item->open_price - mt_rand(1000,5000)/1000;//$price_range['min_price'];
                     } elseif ($item->type == MicroOrder::TYPE_FALL) {
-                        $item->end_price = $price_range['max_price'];
+                        $item->end_price = $item->open_price + mt_rand(1000,5000)/1000;//$price_range['max_price'];
                     }
                     $item->save();
                 }
