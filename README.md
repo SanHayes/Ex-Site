@@ -5,7 +5,7 @@
 设置伪静态laravel5
 开启SSL    安装es   安装 python3   设置反向代理
 ### 删除函数
-putenv,pcntl_signal,pcntl_fork,pcntl_signal_dispatch,pcntl_wait
+putenv,pcntl_signal,pcntl_fork,pcntl_signal_dispatch,pcntl_wait,pcntl_alarm
 ### 安装扩展 
 fileinfo opcache memcache redis imap exif intl xsl
 ### 按照python
