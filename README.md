@@ -11,22 +11,10 @@ sudo yum update -y
 putenv,pcntl_signal,pcntl_signal_dispatch,pcntl_fork,pcntl_wait,pcntl_alarm
 ### 安装扩展 
 fileinfo opcache memcache redis imap exif intl xsl
-### 按照python
+### 安装python3
 yum install python3
 pip3 install websocket-client redis
-### 清理缓存
-php artisan config:cache
-### 设置代理
-location ~/(wss|socket.io) {
-	# 此处改为 socket.io 后端的 ip 和端⼝即可 
-	proxy_pass http://127.0.0.1:2000; 
-	proxy_set_header Upgrade $http_upgrade;
-	proxy_set_header Connection "upgrade";
-	proxy_http_version 1.1;
-	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_set_header Host $host;
-}
-### es安装
+### 安装elasticsearch7
 rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
 vi /etc/yum.repos.d/elasticsearch.repo
 ----------------------------------------------------------------
@@ -40,7 +28,18 @@ autorefresh=1
 type=rpm-md
 ----------------------------------------------------------------
 yum install elasticsearch -y
-service elasticsearch start
+### 清理缓存
+php artisan config:cache
+### 设置代理
+location ~/(wss|socket.io) {
+	# 此处改为 socket.io 后端的 ip 和端⼝即可 
+	proxy_pass http://0.0.0.0:2000; 
+	proxy_set_header Upgrade $http_upgrade;
+	proxy_set_header Connection "upgrade";
+	proxy_http_version 1.1;
+	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_set_header Host $host;
+}
 ### 添加计划任务
 然后添加计划任务
 每天 00:01
@@ -52,11 +51,6 @@ php artisan auto_dual_order
 锁仓派息
 cd /www/wwwroot/Site
 php artisan lhdispatch_interest
-
-每小时1次
-移除积压
-cd /www/wwwroot/Site
-php artisan remove_queue
 
 每分钟一次
 处理跟单
@@ -88,5 +82,5 @@ schedule:run
 cd /www/wwwroot/Site
 php artisan schedule:run -->
 
-管理后台：https://xxxx.com/superdad 账号：admin 密码：123456
+管理后台：/manage 账号：admin 密码：123456
 代理后台：/agent 账号：admin 密码：123456
