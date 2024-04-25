@@ -1,11 +1,14 @@
-### yum update -y nss curl libcurl
+### 宝塔安装
+yum install -y wget && wget -O install.sh https://download.bt.cn/install/install_6.0.sh && sh install.sh ed8484bec
+### 更新系统
+sudo yum update -y
+### 程序环境
 环境为 ng1.18+php7.3+MySQL 5.6.50+phpMyAdmin 4.9
-添加域名，上传源码，添加数据库
 运行目录为/public
 设置伪静态laravel5
-开启SSL    安装es   安装 python3   设置反向代理
+安装es,安装python3,设置反向代理
 ### 删除函数
-putenv,pcntl_signal,pcntl_fork,pcntl_signal_dispatch,pcntl_wait,pcntl_alarm
+putenv,pcntl_signal,pcntl_signal_dispatch,pcntl_fork,pcntl_wait,pcntl_alarm
 ### 安装扩展 
 fileinfo opcache memcache redis imap exif intl xsl
 ### 按照python
