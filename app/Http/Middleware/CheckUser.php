@@ -25,8 +25,9 @@ class CheckUser
             return response()->json(['type' => '998', 'message' =>$message]);
         }
         if ($user_real->review_status != 2){
-
-            return response()->json(['type' => 'error', 'message' => '您的实名认证还未通过！']);
+            $message='您的实名认证还未通过';
+            $message=str_replace('massage.', '', __("massage.$message"));
+            return response()->json(['type' => 'error', 'message' =>$message]);
         }
         if($users->frozen_funds == 1){
             $message='您好，您的资金已被锁定，详情请咨询客服。';
