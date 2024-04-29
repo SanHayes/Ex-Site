@@ -39,31 +39,27 @@
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">正面照片</label>
             <div class="layui-input-block">
-               
-                <!--<img src="@if(!empty($result->front_pic)){{$result->front_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->front_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;">-->
                 @if(!empty($result->front_pic))
-                    <a href="{{$result->front_pic}}" target="_blank">查看</a>
+                    <a href="{{$result->front_pic}}" target="_blank"><img src="@if(!empty($result->front_pic)){{$result->front_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->front_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;"></a>
                 @endif
             </div>
         </div>
          <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">反面照片</label>
             <div class="layui-input-block">
-               
-                <!--<img src="@if(!empty($result->reverse_pic)){{$result->reverse_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->reverse_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;">-->
                 @if(!empty($result->reverse_pic))
-                    <a href="{{$result->reverse_pic}}" target="_blank">查看</a>
+                    <a href="{{$result->reverse_pic}}" target="_blank"><img src="@if(!empty($result->reverse_pic)){{$result->reverse_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->reverse_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;"></a>
                 @endif
             </div>
         </div>
-<!--          <div class="layui-form-item layui-form-text">
-            <label class="layui-form-label">手持身份证照片</label>
-            <div class="layui-input-block"> -->
+         <!--<div class="layui-form-item layui-form-text">-->
+         <!--   <label class="layui-form-label">手持身份证照片</label>-->
+         <!--   <div class="layui-input-block">-->
                <!--<a href="">查看</a>-->
                 <!--<img src="@if(!empty($result->hand_pic)){{$result->hand_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->hand_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;">-->
                 
-<!--             </div>
-        </div>  -->
+        <!--    </div>-->
+        <!--</div> -->
         
         
     </form>
