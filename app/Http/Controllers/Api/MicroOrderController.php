@@ -124,96 +124,63 @@ class MicroOrderController extends Controller
             'seconds' => '到期时间',
             'number' => '投资数额',
         ]);
-        
-        if(Cache::has("microtrade_$user_id")){
-            return $this->error('Do not repeat the operation!'); 
-        }
-        Cache::put("microtrade_$user_id", 1, Carbon::now()->addSeconds(1));//用户1秒只能点击一次
-        try {
-            //进行基本验证
-            throw_if($validator->fails(), new \Exception($validator->errors()->first()));
-            $insurance_start = Setting::getValueByKey('insurance_start','09:00');
-            $insurance_end = Setting::getValueByKey('insurance_end','12:00');
 
-            $insurance_start_datetime = Carbon::parse(date("Y-m-d {$insurance_start}:00"));
-            $insurance_end_datetime = Carbon::parse(date("Y-m-d {$insurance_end}:00"));
-            $use_insurance = 0;//是否使用受保金额
-            $currency = Currency::find($currency_id);
-            //在受保时间段的话
-            if (Carbon::now()->gte($insurance_start_datetime) && Carbon::now()->lte($insurance_end_datetime)) {
-                if($currency->insurancable == 1){
-                    $can_order = $this->canOrder($user_id, $currency_id, $number);
-                    if($can_order !== true){
-                        throw new \Exception("下单失败：{$can_order}");
-                    }
-                    $user_insurance = UsersInsurance::where('user_id', $user_id)
-                        ->whereHas('insurance_type', function ($query) use ($currency_id) {
-                            $query->where('currency_id', $currency_id);
-                        })
-                        ->where('status', 1)
-                        ->where('claim_status', 0)
-                        ->first();
-                    $use_insurance = $user_insurance->insurance_type->type;//1,正向。2,反向。
+        //进行基本验证
+        throw_if($validator->fails(), new \Exception($validator->errors()->first()));
+        $insurance_start = Setting::getValueByKey('insurance_start','09:00');
+        $insurance_end = Setting::getValueByKey('insurance_end','12:00');
+
+        $insurance_start_datetime = Carbon::parse(date("Y-m-d {$insurance_start}:00"));
+        $insurance_end_datetime = Carbon::parse(date("Y-m-d {$insurance_end}:00"));
+        $use_insurance = 0;//是否使用受保金额
+        $currency = Currency::find($currency_id);
+        //在受保时间段的话
+        if (Carbon::now()->gte($insurance_start_datetime) && Carbon::now()->lte($insurance_end_datetime)) {
+            if($currency->insurancable == 1){
+                $can_order = $this->canOrder($user_id, $currency_id, $number);
+                if($can_order !== true){
+                    throw new \Exception("下单失败：{$can_order}");
                 }
+                $user_insurance = UsersInsurance::where('user_id', $user_id)
+                    ->whereHas('insurance_type', function ($query) use ($currency_id) {
+                        $query->where('currency_id', $currency_id);
+                    })
+                    ->where('status', 1)
+                    ->where('claim_status', 0)
+                    ->first();
+                $use_insurance = $user_insurance->insurance_type->type;//1,正向。2,反向。
             }
-            if (
-                ($currency->insurancable != 1 || $use_insurance == 0) //如果当前不在受保时间段内或者所返币种不支持保险
-                && $currency->micro_holdtrade_max > 0 
-                && $this->getExistingOrderNumber($user_id, $currency_id) >= $currency->micro_holdtrade_max
-            ) {
-                throw new \Exception('下单失败:超过最大持仓笔数限制');
-            }
-            $currency_match = CurrencyMatch::find($match_id);
-           
-            $currency_quotation = CurrencyQuotation::where('match_id', $match_id)->first();
-            $fluctuate_min = $currency_quotation->now_price * 0.0001;
-            $fluctuate_max = $currency_quotation->now_price * 0.001;
-            throw_unless($currency_quotation, new \Exception('当前未获取到行情'));
-            $market = MarketHour::getLastEsearchMarket($currency_match->currency_name, $currency_match->legal_name, '1min');
-            // $rkey = 'market.'.strtolower($currency_match->currency_name. $currency_match->legal_name).'.kline.1min';
-            
-            // $market = json_decode(Redis::get($rkey),true);//MarketHour::getLastEsearchMarket($currency_match->currency_name, $currency_match->legal_name, '1min');
-            // $market=$market['tick'];
-            //下单价格随机浮动，减少价格重复概率
-            $decimal = 0;
-            $faker = \Faker\Factory::create();
-            if (stripos($currency_match->fluctuate_min, '.') !== false) {
-                // $fluctuate_min = rtrim($fluctuate_min, '0'); //移除掉小数点后面右侧多余的0
-                $fluctuate_min = rtrim($fluctuate_min, '.'); //如果是整数再移除掉小数点
-                $decimal_index = stripos($fluctuate_min, '.'); //查找小数点的位置
-                if ($decimal_index !== false) {
-                    $decimal = strlen($fluctuate_min) - $decimal_index - 1;
-                }
-            }
-            trim($fluctuate_min, '0');
-            // var_dump($currency_match->fluctuate_min);exit;
-            $float_diff = $faker->randomFloat($decimal, $fluctuate_min, $currency_match->fluctuate_max);
-            $price = $market['close'] ?? $currency_quotation->now_price;
-            
-            // if (mt_rand(0, 1)) {
-            //     $price = bc_add($price, $float_diff);
-            // } else {
-            //     $price = bc_sub($price, $float_diff);
-            // }
-            
-            // var_dump($price);exit;
-            $order_data = [
-                'user_id' => $user_id,
-                'type' => $type,
-                'match_id' => $match_id,
-                'currency_id' => $currency_id,
-                'seconds' => $seconds,
-                'price' => $price,
-                'number' => $number,
-                'use_insurance' => $use_insurance,
-            ];
-            $order = MicroTradeLogic::addOrder($order_data);
-            return $this->success($order);
-        } catch (\Throwable $th) {
-            // throw $th;
-            //return $this->error('File:' . $th->getFile() . ',Line:' . $th->getLine() . ',Message:' . $th->getMessage());
-            return $this->error($th->getMessage());
         }
+        if (
+            ($currency->insurancable != 1 || $use_insurance == 0) //如果当前不在受保时间段内或者所返币种不支持保险
+            && $currency->micro_holdtrade_max > 0 
+            && $this->getExistingOrderNumber($user_id, $currency_id) >= $currency->micro_holdtrade_max
+        ) {
+            throw new \Exception('下单失败:超过最大持仓笔数限制');
+        }
+        $currency_match = CurrencyMatch::find($match_id);
+        $currency_quotation = CurrencyQuotation::where('match_id', $match_id)->first();
+        throw_unless($currency_quotation, new \Exception('当前未获取到行情'));
+        $market = MarketHour::getLastEsearchMarket($currency_match->currency_name, $currency_match->legal_name, '1min');
+        $price = $market['close'] ?? $currency_quotation->now_price;
+        // if (mt_rand(0, 1)) {
+        //     $price = bc_add($price, $float_diff);
+        // } else {
+        //     $price = bc_sub($price, $float_diff);
+        // } 
+        // var_dump($price);exit;
+        $order_data = [
+            'user_id' => $user_id,
+            'type' => $type,
+            'match_id' => $match_id,
+            'currency_id' => $currency_id,
+            'seconds' => $seconds,
+            'price' => $price,
+            'number' => $number,
+            'use_insurance' => $use_insurance,
+        ];
+        $order = MicroTradeLogic::addOrder($order_data);
+        return $this->success($order);
     }
 
     public function lists(Request $request)

@@ -10,6 +10,7 @@ use App\{
 };
 use App\Utils\Probability;
 use App\Jobs\SendClosedMicroOrder;
+use Illuminate\Support\Facades\Cache;
 
 class MicroTradeLogic
 {
@@ -26,18 +27,32 @@ class MicroTradeLogic
             'number' => $number,
             'use_insurance' => $use_insurance,
         ) = $param;
+        if(Cache::has("microtrade_".$user_id)){
+            throw new \Exception(__('该订单已操作过，请勿重复操作')); 
+        }
+        Cache::put("microtrade_".$user_id, 1, Carbon::now()->addSeconds(5));//用户5秒只能点击一次
         try {
             DB::beginTransaction();
             $user = Users::find($user_id);
-            throw_unless($user, new \Exception('用户无效'));
+            if(!$user){
+                throw new \Exception(__('用户未找到'));
+            }
             $currency_match = CurrencyMatch::find($match_id);
-            throw_unless($currency_match, new \Exception('交易对不存在'));
-            throw_unless($currency_match->open_microtrade, new \Exception('交易未开启'));
+            if(!$currency_match){
+                throw new \Exception(__('指定交易对不存在'));
+            }   
+            if(!$currency_match->open_microtrade){
+                throw new \Exception(__('您未开通本交易对的交易功能'));
+            }
             $currency = Currency::where('is_micro', 1)->find($currency_id);
-            throw_unless($currency, new \Exception('币种不存在或不允许被交易'));
+            if(!$currency){
+                throw new \Exception(__('交易不存在或已撤单,请刷新后重试'));
+            }
+                
             $seconds = MicroSecond::where('seconds', $seconds)->first();
-            throw_unless($seconds, new \Exception('到期时间不允许'));
-
+            if(!$seconds){
+                throw new \Exception(__('交易类型错误'));
+            }
             // if (!preg_match('/^\d+$/', $number)) {
             //     throw new \Exception('下单数量必须是整数');
             // }
@@ -134,7 +149,6 @@ class MicroTradeLogic
             ->update([
                 'end_price' => $price,
             ]);
-             $price>6600&&dump(123231312312312312312312);
         self::risk($match_id);
     }
 
