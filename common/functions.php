@@ -380,18 +380,25 @@ function WFile($file,$str,$mode='w') {
 } 
 function mtranslate($val, $to, $from = 'zh')
 {
-    require_once dirname(__DIR__).'/public/translate.php';
-
-    $from = $from;
-    $to = $to;
-    $value = $val;
-
-    $res = translate($value, $from, $to);
-    //file_put_contents('/www/wwwroot/Site/translate.txt',json_encode($res));
-    if (!isset($res['trans_result'])) {
-        return $value;
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => 'http://translate.codeai.net.cn/api/index/translate?token=v143geC6vYSanuqSmGU2',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>'{"keywords":"'.$val.'", "sourceLanguage":"zh","targetLanguage":"en"}',
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json']]
+    );
+    $response = json_decode(curl_exec($curl), true);
+    curl_close($curl);
+    if (isset($response) && $response['code'] != 1) {
+        return $val;
     } else {
-        return isset($res['trans_result']) ? $res['trans_result'][0]['dst'] : $value;
+        return isset($response['data']['text']) ? $response['data']['text'] : $val;
     }
 
 }
