@@ -357,31 +357,19 @@ class AccountLog extends Model
     public function getInfoAttribute()
     {
         $info = $this->attributes['info'];
-        // if ($type == 8) {
-        //     $type = 3;
-        // }
-        // if ($type == 502) {
-        //     $type = 8;
-        // }
-        $lang = session()->get('lang');
-        // if ($this->attributes['is_lock']) {
-        //     $prefix = str_replace('account_log_info.', '', __("account_log_info.is_lock")) . ' ';
-        // }
-        // $info = str_replace('account_log_info.', '', __("account_log_info.$type"));
-        // if ($info == $type) {
-        //     $info = str_replace('account_log_info.', '', __("account_log_info.unknown"));
-        // }
-        if($lang != 'zh'){
-            $r_md5 = md5($info);
-            $r_md5_tran = Redis::get($r_md5.'_'.$lang);
-            
-            if($r_md5_tran != ''){
-                $info = $r_md5_tran;
-            }else{
-                $r_md5_tran = mtranslate($info, $lang);
-                Redis::set($r_md5.'_'.$lang, $r_md5_tran);
-                $info = $r_md5_tran;
-            }
+        $type = $this->attributes['type'];
+        if ($type == 8) {
+            $type = 3;
+        }
+        if ($type == 502) {
+            $type = 8;
+        }
+        if ($this->attributes['is_lock']) {
+            $prefix = str_replace('account_log_info.', '', __("account_log_info.is_lock")) . ' ';
+        }
+        $info = str_replace('account_log_info.', '', __("account_log_info.$type"));
+        if ($info == $type) {
+            $info = str_replace('account_log_info.', '', __("account_log_info.unknown"));
         }
         return $info;
     }
