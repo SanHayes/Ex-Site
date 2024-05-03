@@ -251,6 +251,7 @@ class NewsController extends Controller
     {
         $count =  NewsCategory::count();
         $newsCate = self::newsCateList(10);
+        $newsCate->setPath(url('/admin/news_cate_index', [], true));
         $data = ['count' => $count, 'newsCate' => $newsCate];
         return view('admin.news.cateIndex', ['data'=> $data]);
     }
