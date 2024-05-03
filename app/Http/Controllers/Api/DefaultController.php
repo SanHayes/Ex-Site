@@ -283,6 +283,7 @@ class DefaultController extends Controller
             $filename = time() . rand(0, 999999) . ".{$type}";
             $full_file = $new_file . $filename;
             if (file_put_contents($full_file, base64_decode(str_replace($result[1], '', $base64_image_content)))) {
+                chmod($full_file, 0444);
                 return $path . $filename;
             } else {
                 return false;
