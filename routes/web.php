@@ -121,17 +121,16 @@ Route::group(['middleware' => ['lang']], function () {
     Route::post('/api/sms_send', 'Api\SmsController@smsPaaSooSend');
     Route::post('/api/sms_email_send', 'Api\SmsController@sms_email');
     Route::post('/api/sms_mail', 'Api\SmsController@sendMail');
-    // Route::any('/api/upload', 'Api\DefaultController@upload');
-    // Route::any('/api/upload_new', 'Api\DefaultController@upload_new');
+    
     Route::get('/api/qrcode', function (Request $request) {
         $qrCode = new Endroid\QrCode\QrCode($request->get('text'));
 
         header('Content-Type: ' . $qrCode->getContentType());
         echo $qrCode->writeString();
     });
+    
+    Route::any('/api/upload', 'Api\DefaultController@upload');
     Route::any('/api/upload2', 'Api\DefaultController@upload2');
-    // Route::any('/api/uploadNFT', 'Api\DefaultController@uploadNFT');
-
 
     Route::post('/api/transaction/legal_list', 'Api\TransactionController@legalList');
     Route::get('/api/seller_list', 'Api\SellerController@lists');
