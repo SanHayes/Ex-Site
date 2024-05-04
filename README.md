@@ -31,6 +31,8 @@ yum install elasticsearch -y
 ### 清理缓存
 php artisan config:cache
 ### 设置代理
+server_name ~^.*$;
+
 location ~/(wss|socket.io) {
 	# 此处改为 socket.io 后端的 ip 和端⼝即可 
 	proxy_pass http://0.0.0.0:2000; 
