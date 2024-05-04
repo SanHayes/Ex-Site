@@ -13,7 +13,6 @@ use App\Setting;
 use App\HistoricalData;
 use App\Users;
 use App\Utils\RPC;
-use App\DAO\UploaderDAO;
 
 class DefaultController extends Controller
 {
