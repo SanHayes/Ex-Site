@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Bank;
 use App\Menu;
