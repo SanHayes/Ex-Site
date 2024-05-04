@@ -30,6 +30,10 @@ type=rpm-md
 yum install elasticsearch -y
 ### 清理缓存
 php artisan config:cache
+### 伪静态
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}
 ### 设置代理
 server_name ~^.*$;
 
