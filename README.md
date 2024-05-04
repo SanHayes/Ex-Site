@@ -28,6 +28,8 @@ autorefresh=1
 type=rpm-md
 ----------------------------------------------------------------
 yum install elasticsearch -y
+### 设置上传文件夹映像
+php artisan storage:link
 ### 清理缓存
 php artisan config:cache
 ### 伪静态
