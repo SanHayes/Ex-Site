@@ -390,7 +390,7 @@ function mtranslate($val, $to, $from = 'zh')
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS =>'{"keywords":"'.$val.'", "sourceLanguage":"zh","targetLanguage":"en"}',
+        CURLOPT_POSTFIELDS =>'{"keywords":"'.$val.'", "sourceLanguage":"zh","targetLanguage":"'.$to.'"}',
         CURLOPT_HTTPHEADER => ['Content-Type: application/json']]
     );
     $response = json_decode(curl_exec($curl), true);
