@@ -88,6 +88,7 @@ class NewsController extends Controller
         $lang = trim($request->input('lang', ''));
         $cateList = NewsCategory::all();
         $news = self::newsList($c_id, $keyword, $lang, 10);
+        $news->setPath(url('/admin/news_index', [], true));
         $lang_list = NewsModel::getLangeList();
         $count = count($news);
         $data = [
@@ -263,7 +264,7 @@ class NewsController extends Controller
 
     public function getCateList()
     {
-        $newsCate = self::newsCateList();
+        $newsCate = self::newsCateList(10);
         $count = $newsCate->count();
         $data = [
             'count' => $count,
