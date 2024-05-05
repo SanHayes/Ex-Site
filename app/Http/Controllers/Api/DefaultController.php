@@ -124,15 +124,19 @@ class DefaultController extends Controller
     
     public function upload(Request $request)
     {
-        // 验证上传的文件
-        $validated = $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-        // 定义文件存储路径
-        $filePath = $request->file('file')->store('/upload/'.date('Ymd'), 'public');
-        // 返回存储的文件路径
-        $url = Storage::url($filePath);
-        return $this->success($url);
+        if ($request->hasFile('file')) {
+            // 验证上传的文件
+            $validated = $request->validate([
+                'file' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ]);
+            $file = $request->file('file');
+            // 自定义文件名，自动添加推断的扩展名
+            $fileName = time() . mt_rand(10000, 99999) . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('/upload/'.date('Ymd'), $fileName, 'public');
+            $url = Storage::url($filePath);
+            return $this->success($url);
+        }
+        return $this->error('上传失败');
     }
 
     // ios 文件上传
@@ -159,13 +163,15 @@ class DefaultController extends Controller
             ])) {
                 return false;
             }
+            // $new_file = $path."/".date('Ymd',time())."/";
             $path = '/upload/' . date('Ymd') . '/';
-            $filepath = public_path() . $path;
-            if (! file_exists($filepath)) {
-                mkdir($filepath, 0700);
+            $new_file = public_path() . $path;
+            if (! file_exists($new_file)) {
+                // 检查是否有该文件夹，如果没有就创建，并给予最高权限
+                mkdir($new_file, 0700);
             }
             $filename = time() . rand(0, 999999) . ".{$type}";
-            $full_file = $filepath . $filename;
+            $full_file = $new_file . $filename;
             if (file_put_contents($full_file, base64_decode(str_replace($result[1], '', $base64_image_content)))) {
                 chmod($full_file, 0444);
                 return $path . $filename;
