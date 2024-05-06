@@ -59,6 +59,11 @@ class UsersWalletOut extends Model
     {
         return $this->hasOne('App\Users', 'id', 'user_id')->value('account_number');
     }
+    
+    public function getTypeAttribute()
+    {
+        return $this->hasOne('App\UsersWalletWithdraw', 'address', 'address')->value('type');
+    }
 
     // public function getRealNumberAttribute()
     // {
