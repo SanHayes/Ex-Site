@@ -21,7 +21,7 @@
                     </tr>
                     <tr>
                         <td>
-                            币种类型：基于{{$wallet_out->currency_type}}
+                            币种类型：基于{{$wallet_out->type}}
                         </td>
                         <td>
                             费率：{{$wallet_out->rate}}
