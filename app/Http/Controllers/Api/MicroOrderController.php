@@ -34,6 +34,7 @@ class MicroOrderController extends Controller
     {
         $currencies = Currency::with('microNumbers')
             ->where('is_micro', 1)
+            ->orderBy('sort', 'asc')
             ->get();
         $user = Users::getAuthUser();
 
