@@ -46,6 +46,12 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
+                        <label for="market_from" class="layui-form-label">排序</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" name="sort" placeholder="排序" value="{{ $currency_match->sort ?? 0 }}" >
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
                         <label for="market_from" class="layui-form-label">行情</label>
                         <div class="layui-input-block">
                             <select name="market_from" lay-verify="required">
