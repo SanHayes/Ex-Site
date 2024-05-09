@@ -550,6 +550,7 @@ class CurrencyController extends Controller
         $fluctuate_min = $request->input('fluctuate_min', 0);
         $fluctuate_max = $request->input('fluctuate_max', 0);
         $risk_group_result = $request->input('risk_group_result', 0);
+	$sort = $request->input('sort', 0);
         $cate = $request->input('category');
         $min = $request->input('min',0);
         $currency_match = CurrencyMatch::find($id);
@@ -575,6 +576,7 @@ class CurrencyController extends Controller
             'lever_min_share' => $lever_min_share,
             'lever_max_share' => $lever_max_share,
             'category' => $cate,
+	    'sort' => $sort,
             'min' => $min,
             'create_time' => time(),
             'coin_trade_success' => $coin_trade_success,
