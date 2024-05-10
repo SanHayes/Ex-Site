@@ -100,7 +100,7 @@
                         return d.currency_name+"/"+d.legal_name;
                     }}
                     ,{ title: '委托价', width:100,templet:function(d){
-                        return (parseFloat(d.target_price).toFixed(2));
+                        return (parseFloat(d.target_price).toFixed(4));
                     }}
                     ,{ title: '委托量', width:120,templet:function(d){
                         return (parseFloat(d.trade_amount).toFixed(4));
