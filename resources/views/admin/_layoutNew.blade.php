@@ -23,7 +23,7 @@
         </div>
     </div>
 </section>
-<script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/jquery-3.2.1.min.js"></script>
 <script src="/admin/plugins/layui/layui.js"></script>
 <script>
     /*弹出层*/
