@@ -256,6 +256,16 @@ class Users extends Model
             return "";
         }
     }
+    
+    public function getLastLoginTimeAttribute()
+    {
+        if (isset($this->attributes['last_login_time'])) {
+            $value = $this->attributes['last_login_time'];
+            return $value ? date('Y-m-d H:i:s', $value) : '';
+        } else {
+            return "";
+        }
+    }
 
     //获取用户的账号  手机号或邮箱
     public function getAccountAttribute()

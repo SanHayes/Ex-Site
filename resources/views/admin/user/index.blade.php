@@ -85,12 +85,10 @@
             ,cols: [[
                 {field: '', type: 'checkbox'}
                 ,{field: 'id', title: '用户ID', minWidth: 100}
-                ,{field:'phone', title:'手机号', minWidth:150}
                 ,{field:'userreal_name', title:'真实姓名', minWidth:120}
                 ,{field:'level_text', title:'用户等级', minWidth:110}
                 ,{field:'score', title:'积分', minWidth:100}
                 ,{field:'account_number', title:'交易账号', minWidth:150, hide: true}
-                ,{field:'common', title:'备注', minWidth:150}
                 ,{field:'email', title:'邮箱', minWidth:150}
                 ,{field:'card_id', title: '身份证号',minWidth: 180, hide: true}
                 ,{field:'parent_id', title:'上级ID', minWidth:80}
@@ -99,12 +97,16 @@
                 ,{field: 'status', title: '状态', minWidth: 80, templet:"#status_t"}
                 ,{field: 'cash_info', title: '银行卡', minWidth: 80, templet:"#cash_info"}
                 ,{field: 'cash_info_international', title: '钱包地址', minWidth: 80, templet:"#cash_info_international"}
-                // ,{field:'status', title:'是否锁定', width:90, templet: '#switchTpl'}
-                ,{field:'is_bind_box_author', title:'开通盲盒作者', minWidth:120, templet: '#bind_box'}
-                ,{field:'is_trader', title:'是否为交易员', minWidth:120, templet: '#is_trader'}
                 ,{field:'time', title:'注册时间', minWidth:150}
                 ,{field:'last_login_ip', title:'登录IP', minWidth:150}
-                ,{fixed: 'right', title: '操作', minWidth:330, align: 'center', toolbar: '#barDemo'}
+                ,{field:'last_login_time', title: '登录时间', width: 200}
+                ,{field:'ip_address', title: '登录地区', width: 200}
+                ,{field:'common', title:'备注', minWidth:150}
+                // ,{field:'phone', title:'手机号', minWidth:150}
+                // ,{field:'status', title:'是否锁定', width:90, templet: '#switchTpl'}
+                // ,{field:'is_bind_box_author', title:'开通盲盒作者', minWidth:120, templet: '#bind_box'}
+                // ,{field:'is_trader', title:'是否为交易员', minWidth:120, templet: '#is_trader'}
+                ,{fixed:'right', title: '操作', minWidth:330, align: 'center', toolbar: '#barDemo'}
             ]]
         });
 

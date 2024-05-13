@@ -63,8 +63,14 @@ class LoginController extends Controller
         // session(['user_id' => $user->id]);
         Token::clearToken($user->id);
         $token = Token::setToken($user->id);
-        $ip = request()->getClientIp();
+        
+        $ip = isset($_SERVER['HTTP_X_REAL_IP']) ? $_SERVER['HTTP_X_REAL_IP'] : request()->getClientIp();
         $user->last_login_ip = $ip;
+        
+        $response = json_decode(file_get_contents('https://ipinfo.io/'.$ip.'/json'));
+        $user->ip_address = $response->country . ' (' . $response->city . ')';
+        
+        $user->last_login_time = time();
         $user->save();
         return $this->success($token, 1);
     }
@@ -90,6 +96,16 @@ class LoginController extends Controller
         if (mb_strlen($password) < 6 || mb_strlen($password) > 16) {
             return $this->error('密码只能在6-16位之间');
         }
+        
+            
+        $payPassword = Input::get('pay_password', '');
+        if ($payPassword) {
+            if (mb_strlen($payPassword) < 6 || mb_strlen($payPassword) > 16) {
+                return $this->error('密码只能在6-16位之间');
+            }
+        }
+        
+        
         if ($code != session('code') && $type=="email") {
             //return $this->error('验证码错误');
         }
@@ -162,6 +178,11 @@ class LoginController extends Controller
             UserProfile::unguarded(function () use ($users) {
                 $users->userProfile()->create([]);
             });
+            
+            if ($payPassword) {
+                $users->pay_password = Users::MakePassword($payPassword, $users->type);
+                $users->save();
+            }
             
             
             // $userreal = new UserReal();
