@@ -28,116 +28,107 @@ class MicroTradeLogic
             'use_insurance' => $use_insurance,
         ) = $param;
         if(Cache::has("microtrade_".$user_id)){
-            throw new \Exception(__('该订单已操作过，请勿重复操作')); 
+            return ['ok' => false, 'data' => __('该订单已操作过，请勿重复操作')];
+        }else{
+            try {
+                DB::beginTransaction();
+                $user = Users::find($user_id);
+                throw_unless($user, new \Exception('用户无效'));
+                $currency_match = CurrencyMatch::find($match_id);
+                throw_unless($currency_match, new \Exception('交易对不存在'));
+                throw_unless($currency_match->open_microtrade, new \Exception('交易未开启'));
+                $currency = Currency::where('is_micro', 1)->find($currency_id);
+                throw_unless($currency, new \Exception('币种不存在或不允许被交易'));
+                $seconds = MicroSecond::where('seconds', $seconds)->first();
+                throw_unless($seconds, new \Exception('到期时间不允许'));
+    
+                // if (!preg_match('/^\d+$/', $number)) {
+                //     throw new \Exception('下单数量必须是整数');
+                // }
+                // if (bc_comp($currency->micro_min, 0) > 0 && $number % $currency->micro_min != 0) {
+                //     throw new \Exception('下单数量必须是' . $currency->micro_min . '的整数倍');
+                // }
+                // if (bc_comp($currency->micro_max, $number) < 0  && bc_comp($currency->micro_max, 0) > 0) {
+                //     throw new \Exception('最大下单数量不能超过:' . $currency->micro_max);
+                // }
+                // if (bc_comp($currency->micro_min, $number) > 0  && bc_comp($currency->micro_min, 0) > 0) {
+                //     throw new \Exception(__('最小下单数量不能小于', ['micro_min' => $currency->micro_min]));
+                // }
+                // 判断秒 中的最大金额和最小金额
+                if (!empty($seconds->max_amount) && $number > $seconds->max_amount){
+                    throw new \Exception('最大下单数量不能超过:' . $seconds->max_amount);
+                }
+                if (!empty($seconds->min_amount) && $number < $seconds->min_amount){
+                    throw new \Exception(__('最小下单数量不能小于', ['micro_min' => $seconds->min_amount]));
+                }
+                //持仓类计判断
+                
+                //扣款
+                $wallet = UsersWallet::where('currency', $currency_id)
+                    ->where('user_id', $user_id)
+                    ->first();
+                throw_unless($wallet, new \Exception('用户钱包不存在'));
+                if($use_insurance != 0){
+                    $balance_type = 5;
+                }else{
+                    $balance_type = 4;
+                }
+                $is_insurance = $use_insurance;
+                $result = change_wallet_balance($wallet, $balance_type, -$number, AccountLog::MICRO_TRADE_CLOSE_SETTLE, '期权下单扣除本金');
+                throw_unless($result === true, new \Exception($result));
+                $fee = bc_div(bc_mul($number, $currency->micro_trade_fee), 100);
+                $result = change_wallet_balance($wallet, $balance_type, -$fee, AccountLog::MICRO_TRADE_CLOSE_SETTLE, '期权下单扣除' . $currency->micro_trade_fee . '%手续费');
+                $level=Level::where('level',$user->level)->first();
+    
+    
+                $insurance_start = Setting::getValueByKey('insurance_start','09:00');
+                $insurance_end = Setting::getValueByKey('insurance_end','12:00');
+    
+                $insurance_start_datetime = Carbon::parse(date("Y-m-d {$insurance_start}:00"));
+                $insurance_end_datetime = Carbon::parse(date("Y-m-d {$insurance_end}:00"));
+    
+                if (Carbon::now()->gte($insurance_start_datetime) && Carbon::now()->lte($insurance_end_datetime)) {
+                    $at_protected = true;
+                }else{
+                    $at_protected = false;
+                }
+                if (!empty($level) && !$at_protected){
+                    Users::rebate($user_id,$user_id,$currency_id,$fee,1,$level->max_algebra);
+                }
+    
+                throw_unless($result === true, new \Exception($result));
+                $now = Carbon::now();
+                $order_data = [
+                    'user_id' => $user_id,
+                    'match_id' => $currency_match->id,
+                    'currency_id' => $currency->id,
+                    'type' => $type,
+                    'seconds' => $seconds->seconds,
+                    'number' => $number,
+                    'open_price' => $price,
+                    'end_price' => $price,
+                    'profit_ratio' => $seconds->profit_ratio,
+                    'loss_ratio' => $seconds->loss_ratio,
+                    'fee' => $fee,
+                    'status' => MicroOrder::STATUS_OPENED,
+                    'pre_profit_result' => 0, //预设赢利
+                    'handled_at' => $now->addSeconds($seconds->seconds),
+                    'is_insurance' => $is_insurance,
+                    'agent_path' =>$user->agent_path,
+                ];
+                //添加一个交易
+                $result = MicroOrder::unguarded(function () use ($order_data) {
+                    $micro_order = MicroOrder::create($order_data);
+                    return $micro_order;
+                });
+                DB::commit();
+                return $result;
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                throw $th;
+            }
         }
         Cache::put("microtrade_".$user_id, 1, Carbon::now()->addSeconds(5));//用户5秒只能点击一次
-        try {
-            DB::beginTransaction();
-            $user = Users::find($user_id);
-            if(!$user){
-                throw new \Exception(__('用户未找到'));
-            }
-            $currency_match = CurrencyMatch::find($match_id);
-            if(!$currency_match){
-                throw new \Exception(__('指定交易对不存在'));
-            }   
-            if(!$currency_match->open_microtrade){
-                throw new \Exception(__('您未开通本交易对的交易功能'));
-            }
-            $currency = Currency::where('is_micro', 1)->find($currency_id);
-            if(!$currency){
-                throw new \Exception(__('交易不存在或已撤单,请刷新后重试'));
-            }
-                
-            $seconds = MicroSecond::where('seconds', $seconds)->first();
-            if(!$seconds){
-                throw new \Exception(__('交易类型错误'));
-            }
-            // if (!preg_match('/^\d+$/', $number)) {
-            //     throw new \Exception('下单数量必须是整数');
-            // }
-            // if (bc_comp($currency->micro_min, 0) > 0 && $number % $currency->micro_min != 0) {
-            //     throw new \Exception('下单数量必须是' . $currency->micro_min . '的整数倍');
-            // }
-            // if (bc_comp($currency->micro_max, $number) < 0  && bc_comp($currency->micro_max, 0) > 0) {
-            //     throw new \Exception('最大下单数量不能超过:' . $currency->micro_max);
-            // }
-            // if (bc_comp($currency->micro_min, $number) > 0  && bc_comp($currency->micro_min, 0) > 0) {
-            //     throw new \Exception(__('最小下单数量不能小于', ['micro_min' => $currency->micro_min]));
-            // }
-            // 判断秒 中的最大金额和最小金额
-            if (!empty($seconds->max_amount) && $number > $seconds->max_amount){
-                throw new \Exception('最大下单数量不能超过:' . $seconds->max_amount);
-            }
-            if (!empty($seconds->min_amount) && $number < $seconds->min_amount){
-                throw new \Exception(__('最小下单数量不能小于', ['micro_min' => $seconds->min_amount]));
-            }
-            //持仓类计判断
-            
-            //扣款
-            $wallet = UsersWallet::where('currency', $currency_id)
-                ->where('user_id', $user_id)
-                ->first();
-            throw_unless($wallet, new \Exception('用户钱包不存在'));
-            if($use_insurance != 0){
-                $balance_type = 5;
-            }else{
-                $balance_type = 4;
-            }
-            $is_insurance = $use_insurance;
-            $result = change_wallet_balance($wallet, $balance_type, -$number, AccountLog::MICRO_TRADE_CLOSE_SETTLE, '期权下单扣除本金');
-            throw_unless($result === true, new \Exception($result));
-            $fee = bc_div(bc_mul($number, $currency->micro_trade_fee), 100);
-            $result = change_wallet_balance($wallet, $balance_type, -$fee, AccountLog::MICRO_TRADE_CLOSE_SETTLE, '期权下单扣除' . $currency->micro_trade_fee . '%手续费');
-            $level=Level::where('level',$user->level)->first();
-
-
-            $insurance_start = Setting::getValueByKey('insurance_start','09:00');
-            $insurance_end = Setting::getValueByKey('insurance_end','12:00');
-
-            $insurance_start_datetime = Carbon::parse(date("Y-m-d {$insurance_start}:00"));
-            $insurance_end_datetime = Carbon::parse(date("Y-m-d {$insurance_end}:00"));
-
-            if (Carbon::now()->gte($insurance_start_datetime) && Carbon::now()->lte($insurance_end_datetime)) {
-                $at_protected = true;
-            }else{
-                $at_protected = false;
-            }
-            if (!empty($level) && !$at_protected){
-                Users::rebate($user_id,$user_id,$currency_id,$fee,1,$level->max_algebra);
-            }
-
-            throw_unless($result === true, new \Exception($result));
-            $now = Carbon::now();
-            $order_data = [
-                'user_id' => $user_id,
-                'match_id' => $currency_match->id,
-                'currency_id' => $currency->id,
-                'type' => $type,
-                'seconds' => $seconds->seconds,
-                'number' => $number,
-                'open_price' => $price,
-                'end_price' => $price,
-                'profit_ratio' => $seconds->profit_ratio,
-                'loss_ratio' => $seconds->loss_ratio,
-                'fee' => $fee,
-                'status' => MicroOrder::STATUS_OPENED,
-                'pre_profit_result' => 0, //预设赢利
-                'handled_at' => $now->addSeconds($seconds->seconds),
-                'is_insurance' => $is_insurance,
-                'agent_path' =>$user->agent_path,
-            ];
-            //添加一个交易
-            $result = MicroOrder::unguarded(function () use ($order_data) {
-                $micro_order = MicroOrder::create($order_data);
-                return $micro_order;
-            });
-            DB::commit();
-            return $result;
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            throw $th;
-        }
     }
 
 
@@ -149,6 +140,7 @@ class MicroTradeLogic
             ->update([
                 'end_price' => $price,
             ]);
+             $price>6600&&dump(123231312312312312312312);
         self::risk($match_id);
     }
 
