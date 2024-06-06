@@ -30,6 +30,7 @@ class MicroTradeLogic
         if(Cache::has("microtrade_".$user_id)){
             return ['ok' => false, 'data' => __('该订单已操作过，请勿重复操作')];
         }else{
+            Cache::put("microtrade_".$user_id, 1, Carbon::now()->addSeconds(5));//用户5秒只能点击一次
             try {
                 DB::beginTransaction();
                 $user = Users::find($user_id);
@@ -128,7 +129,6 @@ class MicroTradeLogic
                 throw $th;
             }
         }
-        Cache::put("microtrade_".$user_id, 1, Carbon::now()->addSeconds(5));//用户5秒只能点击一次
     }
 
 
