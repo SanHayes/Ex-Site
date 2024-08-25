@@ -283,7 +283,7 @@ class AccountLog extends Model
         $lock_tpye = $this->walletLog()->value('lock_type');
         array_key_exists($balance_type, $type1) ?: $balance_type = 0;
         array_key_exists($lock_tpye, $type2) ?: $lock_tpye = 0;
-        return $type1[$balance_type] . $type2[$lock_tpye];
+        return str_replace('account_log_info.', '', __("account_log_info.".$type1[$balance_type])) . str_replace('account_log_info.', '', __("account_log_info.".$type2[$lock_tpye]));
 
     }
 

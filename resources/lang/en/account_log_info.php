@@ -67,4 +67,14 @@ return [
     '32' => 'Breakout freeze',
     '35' => 'Transaction fee',
     '30' => 'Contract transactions deduct margin',
+    '无' => 'rien',
+    '资金' => 'capital',
+    '币币' => 'devise de pièce',
+    '合约' => 'contrat',
+    '期权' => 'option',
+    '保险' => 'Assurance',
+    '[锁定]' => '[verrouillage]',
+    '审核中' => 'En cours de révision',
+    '审核完成' => 'Révision terminée',
+    '审核失败' => 'Révision échouée'
 ];

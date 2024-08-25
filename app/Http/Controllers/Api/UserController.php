@@ -1854,7 +1854,7 @@ class UserController extends Controller
         foreach($lists->items() as &$items){
             $items->create_time = date('Y-m-d H:i:s',$items->create_time);
             $arr = [1=>'审核中',2=>'审核完成',3=>'审核失败'];
-            $items->status_text = $arr[$items->status];
+            $items->status_text = str_replace('account_log_info.', '', __("account_log_info.".$arr[$items->status]));
         }
         unset($items);
         $result = array('data' => $lists->items(), 'page' => $page, 'pages' => $lists->lastPage(), 'total' => $lists->total());
