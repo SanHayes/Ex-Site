@@ -41,6 +41,8 @@
             <div class="layui-input-block">
                 @if(!empty($result->front_pic))
                     <a href="{{$result->front_pic}}" target="_blank"><img src="@if(!empty($result->front_pic)){{$result->front_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->front_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;"></a>
+                @else
+                    <img src="/upload/noupload.jpg" width="100"/>
                 @endif
             </div>
         </div>
@@ -49,6 +51,8 @@
             <div class="layui-input-block">
                 @if(!empty($result->reverse_pic))
                     <a href="{{$result->reverse_pic}}" target="_blank"><img src="@if(!empty($result->reverse_pic)){{$result->reverse_pic}}@endif" id="img_thumbnail" class="thumbnail" style="display: @if(!empty($result->reverse_pic)){{"block"}}@else{{"none"}}@endif;max-width: 200px;height: auto;margin-top: 5px;"></a>
+                @else
+                    <img src="/upload/noupload.jpg" width="100"/>
                 @endif
             </div>
         </div>
