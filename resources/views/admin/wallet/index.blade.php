@@ -155,6 +155,18 @@
 <script type="text/html" id="toolbar">
   
 </script>
+<script type="text/html" id="handle_micro_balance">
+    <span style="color: @{{ d.micro_balance > 0 ? 'red' : ''}}">@{{ d.micro_balance }}</span>
+</script>
+<script type="text/html" id="handle_lever_balance">
+    <span style="color: @{{ d.lever_balance > 0 ? 'red' : ''}}">@{{ d.lever_balance }}</span>
+</script>
+<script type="text/html" id="handle_change_balance">
+    <span style="color: @{{ d.change_balance > 0 ? 'red' : ''}}">@{{ d.change_balance }}</span>
+</script>
+<script type="text/html" id="handle_legal_balance">
+    <span style="color: @{{ d.legal_balance > 0 ? 'red' : ''}}">@{{ d.legal_balance }}</span>
+</script>
 <script>
     layui.use(['table', 'layer', 'form'], function() {
         var table = layui.table
@@ -172,23 +184,23 @@
                     {field: 'id', title: 'id', width: 70, rowspan: 2}
                     ,{field: 'account_number', title: '账号', width: 120, rowspan: 2}
                     ,{field: 'currency_name', title: '币种', width: 100, totalRowText: '小计', rowspan: 2}
-                    ,{field: 'old_balance', title: '链上余额', width: 150, totalRow: true, rowspan: 2}
+                    // ,{field: 'old_balance', title: '链上余额', width: 150, totalRow: true, rowspan: 2}
                     ,{title: '币币', width: 380, colspan: 2, rowspan: 1, align: "center"}
                     ,{title: '杠杆币', width: 380, colspan: 2, rowspan: 1, align: "center"}
                     ,{title: '期权币', width: 380, colspan: 2, rowspan: 1, align: "center"}
                     ,{title: '法币', width: 380, colspan: 2, rowspan: 1, align: "center"}
-                    ,{field: 'gl_time_str', title: '归拢时间', width: 170, hide: true, rowspan: 2}
-                    ,{field: 'address', title: '地址', width: 380, rowspan: 2,edit:"editNum"}
-                    ,{field: 'address_2', title: '地址2', width: 380, rowspan: 2,edit:"editNum"}
+                    // ,{field: 'gl_time_str', title: '归拢时间', width: 170, hide: true, rowspan: 2}
+                    // ,{field: 'address', title: '地址', width: 380, rowspan: 2,edit:"editNum"}
+                    // ,{field: 'address_2', title: '地址2', width: 380, rowspan: 2,edit:"editNum"}
                 ], [
-                    {field: 'change_balance', title: '余额', width: 130, totalRow: true}
-                    ,{field: 'lock_change_balance', title: '冻结', width: 130, totalRow: true}
-                    ,{field: 'lever_balance', title: '余额', width: 130, totalRow: true}
-                    ,{field: 'lock_lever_balance', title: '冻结', width: 130, totalRow: true} 
-                    ,{field: 'micro_balance', title: '余额', width: 130, totalRow: true}
-                    ,{field: 'lock_micro_balance', title: '冻结', width: 130, totalRow: true} 
-                    ,{field: 'legal_balance', title: '余额', width: 130, totalRow: true}
-                    ,{field: 'lock_legal_balance', title: '冻结', width: 130, totalRow: true}
+                    {field: 'change_balance', title: '余额',  totalRow: true, templet:'#handle_change_balance'}
+                    ,{field: 'lock_change_balance', title: '冻结',  totalRow: true}
+                    ,{field: 'lever_balance', title: '余额',  totalRow: true, templet:'#handle_lever_balance'}
+                    ,{field: 'lock_lever_balance', title: '冻结',  totalRow: true} 
+                    ,{field: 'micro_balance', title: '余额',  totalRow: true, templet:'#handle_micro_balance'}
+                    ,{field: 'lock_micro_balance', title: '冻结',  totalRow: true} 
+                    ,{field: 'legal_balance', title: '余额',  totalRow: true, templet:'#handle_legal_balance'}
+                    ,{field: 'lock_legal_balance', title: '冻结',  totalRow: true}
                 ]
             ],
             done: function(res, curr, count) {

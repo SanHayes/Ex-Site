@@ -18,9 +18,20 @@
             
         </script>
         <script type="text/html" id="switchTpl">
-        <input type="checkbox" name="status" value="@{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="sexDemo" @{{ d.status == 1 ? 'checked' : '' }} >
-      </script>
-
+            <input type="checkbox" name="status" value="@{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="sexDemo" @{{ d.status == 1 ? 'checked' : '' }} >
+        </script>
+        <script type="text/html" id="handle_micro_balance">
+            <span style="color: @{{ d.micro_balance > 0 ? 'red' : ''}}">@{{ d.micro_balance }}</span>
+        </script>
+        <script type="text/html" id="handle_lever_balance">
+            <span style="color: @{{ d.lever_balance > 0 ? 'red' : ''}}">@{{ d.lever_balance }}</span>
+        </script>
+        <script type="text/html" id="handle_change_balance">
+            <span style="color: @{{ d.change_balance > 0 ? 'red' : ''}}">@{{ d.change_balance }}</span>
+        </script>
+        <script type="text/html" id="handle_legal_balance">
+            <span style="color: @{{ d.legal_balance > 0 ? 'red' : ''}}">@{{ d.legal_balance }}</span>
+        </script>
 @endsection
 
         @section('scripts')
@@ -43,28 +54,28 @@
                                 elem: '#userlist'
                                 , url: url
                                 , page: true
-                                ,limit: 20
+                                ,limit: 50
                                 , cols: [
                                     [
-                                        {field: 'id', title: 'ID', width: 150}
-                                        ,{field:'currency_name',title: '币种',width: 150}
-                                        ,{field:'address',title:'充币地址', width:200}
+                                        {field: 'id', title: 'ID'}
+                                        ,{field:'currency_name',title: '币种'}
+                                        // ,{field:'address',title:'充币地址', width:200}
     
-                                        ,{field:'micro_balance',title:'期权余额', width:150}
-                                        ,{field:'lock_micro_balance',title:'期权锁定余额', width:150}
+                                        ,{field:'micro_balance',title:'期权余额', templet:'#handle_micro_balance'}
+                                        ,{field:'lock_micro_balance',title:'期权锁定余额'}
     
-                                        ,{field:'lever_balance',title:'杠杆余额', width:150}
-                                        ,{field:'lock_lever_balance',title:'杠杆锁定余额', width:150}
+                                        ,{field:'lever_balance',title:'杠杆余额', templet:'#handle_lever_balance'}
+                                        ,{field:'lock_lever_balance',title:'杠杆锁定余额'}
                                         
-                                        ,{field:'change_balance',title:'币币余额', width:150}
-                                        ,{field:'lock_change_balance',title:'币币锁定余额', width:150}
+                                        ,{field:'change_balance',title:'币币余额', templet:'#handle_change_balance'}
+                                        ,{field:'lock_change_balance',title:'币币锁定余额'}
     
-                                        ,{field:'legal_balance',title:'法币余额', width:150}
-                                        ,{field:'lock_legal_balance',title:'法币锁定余额', width:150}
+                                        ,{field:'legal_balance',title:'法币余额', templet:'#handle_legal_balance'}
+                                        ,{field:'lock_legal_balance',title:'法币锁定余额'}
                                         
                                         // ,{field:'old_balance',title:'链上余额', width:150}
-                                        ,{field:'create_time',title:'时间', width:200}
-                                        ,{fixed: 'right', title: '操作', width: 280, align: 'center', toolbar: '#barDemo'}
+                                        // ,{field:'create_time',title:'时间', width:200}
+                                        ,{fixed: 'right', title: '操作', align: 'center', toolbar: '#barDemo'}
                                     ]
                                 ],
                                 done: function(res, curr, count) {
@@ -77,6 +88,11 @@
                                 }
                             });
                         }
+                        
+                        function handle(){
+                            
+                        }
+                        
                         var user_id = $("input[name='user_id']").val()
                         tbRend("{{url('/admin/user/walletList')}}?user_id=" + user_id);
                         
