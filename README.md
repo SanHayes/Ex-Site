@@ -12,11 +12,9 @@ putenv,pcntl_signal,pcntl_signal_dispatch,pcntl_fork,pcntl_wait,pcntl_alarm
 ### 安装扩展 
 fileinfo opcache memcache redis imap exif intl xsl
 ### 安装python3
-yum install python3
-pip3 install websocket-client redis
+yum install -y python3 && pip3 install websocket-client redis
 ### 安装elasticsearch7
-rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
-vi /etc/yum.repos.d/elasticsearch.repo
+rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch && vi /etc/yum.repos.d/elasticsearch.repo
 ----------------------------------------------------------------
 [elasticsearch-7.x]
 name=Elasticsearch repository for 7.x packages

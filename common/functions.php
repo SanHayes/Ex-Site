@@ -187,10 +187,10 @@ function bc_pow($left_operand, $right_operand)
 
 function bc_method($method_name, $left_operand, $right_operand, $out_scale = DECIMAL_SCALE)
 {
-    $left_operand = number_format($left_operand, DECIMAL_SCALE, '.', '');
-    $method_name != 'bcpow' && $right_operand = number_format($right_operand, DECIMAL_SCALE, '.', '');
+    $left_operand = number_format($left_operand, 8, '.', '');
+    $method_name != 'bcpow' && $right_operand = number_format($right_operand, 8, '.', '');
     $result = call_user_func($method_name, $left_operand, $right_operand);
-    return $method_name != 'bccomp' ? number_format($result, $out_scale, '.', '') : $result;
+    return $method_name != 'bccomp' ? number_format($result, 8, '.', '') : $result;
 }
 
 /**
@@ -204,7 +204,7 @@ function sctonum($num, $double = DECIMAL_SCALE)
 {
     if (false !== stripos($num, "e")) {
         $a = explode("e", strtolower($num));
-        return bcmul($a[0], bcpow(10, $a[1], $double), $double);
+        return bcmul($a[0], bcpow(10, $a[1], 8), 8);
     } else {
         return $num;
     }
