@@ -494,37 +494,49 @@ class WalletController extends Controller
         $rate = Input::get("rate", '');
         $address = Input::get("address", '');
         $password = Input::get('pay_password');
-        if (empty($currency_id) || empty($number) || ($type == 0 && empty($address))) {
+        $users_wallet_withdraw_id = Input::get('users_wallet_withdraw_id');
+
+        if (empty($currency_id) || empty($number) ) {
             return $this->error('参数错误');
         }
-        
+
+        $userWalletWithDraw = DB::table('users_wallet_withdraw')
+            ->where("user_id", $user_id)
+            ->where("id", $users_wallet_withdraw_id)
+            ->first();
+        if (!$userWalletWithDraw) {
+            return $this->error('地址不存在');
+        }
+        $address = $userWalletWithDraw->address;
+
+
         switch ($currency_id) {
-        //BTC
-        case '1':
-            if (!(preg_match('/^(1|3)[a-zA-Z\d]{24,33}$/', $address) && preg_match('/^[^0OlI]{25,34}$/', $address))) {
-                return $this->error('参数错误');
-            }
-            break;
-        //ETH
-        case '2':
-            
-            if (!(preg_match('/^(0x)?[0-9a-fA-F]{40}$/', $address))) {
-                 return $this->error('参数错误');
-            }
-            break;
+                //BTC
+                // case '1':
+                //     if (!(preg_match('/^(1|3)[a-zA-Z\d]{24,33}$/', $address) && preg_match('/^[^0OlI]{25,34}$/', $address))) {
+                //         return $this->error('参数错误');
+                //     }
+                //     break;
+                // //ETH
+                // case '2':
+
+                //     if (!(preg_match('/^(0x)?[0-9a-fA-F]{40}$/', $address))) {
+                //          return $this->error('参数错误');
+                //     }
+                //     break;
         }
         if ($number < 0) {
             return $this->error('输入的金额不能为负数');
         }
         $user = Users::getById(Users::getUserId());
         $payPassword = Users::MakePassword($password, $user->type);
-        
+
         $zkRadio = Setting::getValueByKey('tk_radio', '');
-        
-        if($zkRadio == 1){
-            if($payPassword!=$user->pay_password) return $this->error('支付密码错误');
+
+        if ($zkRadio == 1) {
+            if ($payPassword != $user->pay_password) return $this->error('支付密码错误');
         }
-        if($user->frozen_funds == 1){
+        if ($user->frozen_funds == 1) {
             return $this->error('资金已冻结');
         }
         $currencyInfo = Currency::find($currency_id);
@@ -532,19 +544,19 @@ class WalletController extends Controller
             return $this->error('数量不能少于最小值');
         }
         $user_name = $user['email'];
-        if (empty($user_name)){
+        if (empty($user_name)) {
             $user_name =  $user['phone'];
         }
         try {
             DB::beginTransaction();
             $wallet = UsersWallet::where('user_id', $user_id)->where('currency', $currency_id)->lockForUpdate()->first();
-        
+
             if ($number > $wallet->change_balance) {
                 DB::rollBack();
                 return $this->error('余额不足');
             }
             $walletOut = new UsersWalletOut();
-            $walletOut->type=$type;
+            $walletOut->type = $type;
             $walletOut->user_id = $user_id;
             $walletOut->currency = $currency_id;
             $walletOut->number = $number;
@@ -553,7 +565,7 @@ class WalletController extends Controller
             $walletOut->rate = $rate;
             $walletOut->real_number = $number  - $rate;
             $walletOut->create_time = time();
-            $walletOut->status = 1; 
+            $walletOut->status = 1;
             $walletOut->save();
 
             $result = change_wallet_balance($wallet, 2, -$number, AccountLog::WALLETOUT, '申请提币扣除余额');
