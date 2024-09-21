@@ -25,7 +25,7 @@ class AdminAuthenticate
 
         if (empty($admin)) {
             //return response()->json(['error' => '999', 'message' => '请先登录']);
-            return redirect('/superdad');
+            return redirect('/manage');
         }
         // if (Session::getId()!=Auth::user()->last_session){
             
@@ -36,7 +36,7 @@ class AdminAuthenticate
             session()->put('admin_id', '');
             session()->put('admin_role_id','');
             session()->put('admin_is_super', '');
-            return redirect('/superdad');
+            return redirect('/manage');
         }
         $admin_role = AdminRole::where('id', $admin_user->role_id)->first();
         $admin_permit = AdminRolePermission::where('role_id', $admin_user->role_id)->get();
@@ -101,6 +101,7 @@ class AdminAuthenticate
                 $arr[] = 'admin/coin_trade/list';
                 $arr[] = 'admin/coin_trade/close';
             }
+            $arr[] = 'admin/tips/tips';
         }
         // print_r($arr);exit();
 
