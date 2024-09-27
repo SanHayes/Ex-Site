@@ -29,6 +29,19 @@ class NewsController extends Controller
         return $this->success($news);
     }
 
+    public function getUserAgreement(Request $request)
+    {
+        $lang = $request->get('lang', '') ?: session()->get('lang');
+        $lang == '' && $lang = 'en';
+
+        $news = News::where('c_id', 41)->where('lang', $lang)->first();
+        if (!$news) {
+            $news = News::where('c_id', 41)->where('lang', 'en')->first();
+        }
+
+        return $this->success($news);
+    }
+
     public function getFAQ(Request $request)
     {
 

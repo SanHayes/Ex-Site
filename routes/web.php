@@ -110,7 +110,8 @@ Route::group(['middleware' => ['lang']], function () {
     Route::get('/api/aboutus', 'Api\NewsController@getAboutUs');
     Route::any('/api/general_new', 'Api\NewsController@general');
     Route::get('/api/operational_compliance', 'Api\NewsController@getOperationalCompliance');
-     Route::get('/api/getAgreement', 'Api\NewsController@getAgreement');
+    Route::get('/api/getUserAgreement', 'Api\NewsController@getUserAgreement');//获取用户协议
+    Route::get('/api/getAgreement', 'Api\NewsController@getAgreement');
 
 
     Route::get('/api/news/index_pop', 'Api\NewsController@getIndexPopup');
