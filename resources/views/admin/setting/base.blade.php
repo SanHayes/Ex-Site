@@ -290,7 +290,7 @@
                                     <input type="radio" name="sharar_radio" value="1" title="是" @if (isset($setting['sharar_radio'])) {{$setting['sharar_radio'] == 1 ? 'checked' : ''}} @endif >
                                     <input type="radio" name="sharar_radio" value="0" title="否" @if (isset($setting['sharar_radio'])) {{$setting['sharar_radio'] == 0 ? 'checked' : ''}} @else checked @endif >
                                 </div>
-                                <div class="layui-form-mid layui-word-aux">注册时验证码是否必填</div>
+                                <div class="layui-form-mid layui-word-aux">注册时邀请码是否必填</div>
                             </div>
                         </div>
                         <div class="layui-form-item">
