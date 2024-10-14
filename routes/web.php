@@ -280,7 +280,7 @@ Route::group(['middleware' => ['lang']], function () {
         Route::post('/currency/deposit/gain', 'Api\CurrencyDepositController@getInterest');
         Route::post('/coin/trade', 'Api\CoinTradeController@submit');
         Route::get('/coin/list', 'Api\CoinTradeController@tradeList');
-        Route::put('/coin/trade', 'Api\CoinTradeController@cancelTrade');
+        Route::post('/coin/canceltrade', 'Api\CoinTradeController@cancelTrade');
         Route::post('chat/bind', 'Api\ChatController@bind');
         Route::post('chat/send', 'Api\ChatController@send');
         Route::post('chat/get_chat_logs', 'Api\ChatController@getChatLog');
