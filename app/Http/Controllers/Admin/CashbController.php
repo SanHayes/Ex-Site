@@ -51,9 +51,12 @@ class CashbController extends Controller
             return $this->error('参数小错误');
         }
         $walletout = UsersWalletOut::find($id);
+        
+        $walletoutType = DB::table('users_wallet_out')->where('id' , $id)->value('type');
+
         $card_info = null;
         $card_info_data = [];
-        if ($walletout->type == 1) { // 提现到银行卡
+        if ($walletoutType) { // 提现到银行卡
             $card_info = UserCashInfo::where('user_id', $walletout->user_id)->first();
         } else if ($walletout->type == 2) { // 提现到国际卡
             // 获取表单设置
@@ -85,7 +88,8 @@ class CashbController extends Controller
             }
         }
         $use_chain_api = Setting::getValueByKey('use_chain_api', 0);
-        return view('admin.cashb.edit', ['wallet_out' => $walletout,'use_chain_api' => $use_chain_api, 'card_info'=>$card_info, 'card_info_data' => $card_info_data]);
+        return view('admin.cashb.edit', ['use_chain_api' => $use_chain_api, 'card_info'=>$card_info, 'card_info_data' => $card_info_data, 'wallet_out' => $walletout, 
+        "walletout_type" => $walletoutType]);
         
     }
 

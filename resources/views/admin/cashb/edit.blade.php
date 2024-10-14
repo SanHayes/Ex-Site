@@ -1,3 +1,4 @@
+
 @extends('admin._layoutNew')
 
 @section('page-head')
@@ -5,11 +6,11 @@
 @endsection
 
 @section('page-content')
-    <form class="layui-form" action="">
-        <div class="layui-form-item">
-            <label class="layui-form-label">提币信息</label>
-            <div class="layui-input-block">
-               <table class="layui-table">
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">提币信息</label>
+        <div class="layui-input-block">
+            <table class="layui-table">
                 <tbody>
                     <tr>
                         <td>
@@ -21,7 +22,7 @@
                     </tr>
                     <tr>
                         <td>
-                            币种类型：基于{{$wallet_out->type}}
+                            币种类型：基于{{$wallet_out->currency_type}}
                         </td>
                         <td>
                             费率：{{$wallet_out->rate}}
@@ -36,37 +37,39 @@
                         </td>
                     </tr>
                     <tr>
-                         <td>
+                        @if($walletout_type == 0)
+                        <td>
                             提币地址：{{$wallet_out->address}}
                         </td>
-                         @if($wallet_out->type == 1 )
-                         <td>
+                        @endif
+                        @if($walletout_type == 1 )
+                        <td>
                             人民币价格：{{$wallet_out->real_rmb}}元
                         </td>
-                         @endif
+                        @endif
                     </tr>
-                    @if($wallet_out->type == 1 )
-                     <tr>
-                         <td>
+                    @if($walletout_type == 1)
+                    <tr>
+                        <td>
                             真实姓名：{{$wallet_out->real_name}}
                         </td>
                         <td>
-                            银行卡账号：{{$wallet_out->bank_account}}
+                            银行卡账号：{{$card_info->bank_account ?? ""}}
                         </td>
                     </tr>
                     <tr>
-                         <td>
-                            开户银行：{{$wallet_out->bank_name}}
+                        <td>
+                            开户银行：{{$card_info->bank_name ?? ""}}
                         </td>
                         <td>
-                            开户省市：{{$card_info->bank_dizhi}}
+                            开户省市：{{$card_info->bank_dizhi ?? ""}}
                         </td>
                     </tr>
                     @endif
-                    @if($wallet_out->type == 2 )
+                    @if($walletout_type == 2 )
                     @foreach ($card_info_data as $key => $item)
-                     <tr>
-                         <td colspan="2">
+                    <tr>
+                        <td colspan="2">
                             {{$key}}：{{$item}}
                         </td>
                     </tr>
@@ -82,50 +85,50 @@
                     <!--    </td>-->
                     <!--</tr>-->
                     @endif
-                    
+
                     <tr>
                         <td>
                             申请时间：{{$wallet_out->create_time}}
                         </td>
                         <td>
                             当前状态：@if($wallet_out->status==1) 提交申请
-								     @elseif($wallet_out->status==2) 提币成功
-								     @elseif($wallet_out->status==3) 提币失败
-								    @else
-                                    @endif
+                            @elseif($wallet_out->status==2) 提币成功
+                            @elseif($wallet_out->status==3) 提币失败
+                            @else
+                            @endif
                         </td>
                     </tr>
 
                 </tbody>
             </table>
-            </div>
         </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">反馈信息</label>
-            <div class="layui-input-block">
-               <textarea name="notes" id="" cols="90" rows="5">{{$wallet_out->notes}}</textarea>
-            </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">反馈信息</label>
+        <div class="layui-input-block">
+            <textarea name="notes" id="" cols="90" rows="5">{{$wallet_out->notes}}</textarea>
         </div>
-        @if($wallet_out->status==1)
-        <!--<div class="layui-form-item">-->
-        <!--    <label class="layui-form-label">安全验证码</label>-->
-        <!--    <div class="layui-input-inline">-->
-        <!--        <input type="text" name="verificationcode" placeholder="" autocomplete="off" class="layui-input">-->
-        <!--    </div>-->
-        <!--    <button type="button" class="layui-btn layui-btn-primary" id="get_code">获取验证码</button>-->
-        <!--</div>-->
-        @endif
-        <input type="hidden" name="id" value="">
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <input type="hidden" name='id' value='{{$wallet_out->id}}'>
-                @if($wallet_out->status==1)
-                <button class="layui-btn" lay-submit="" lay-filter="demo1" name='method' value="done">确认提币</button>
-                <button class="layui-btn layui-btn-danger" lay-submit="" lay-filter="demo2">退回申请</button>
-                @endif
-            </div>
+    </div>
+    @if($wallet_out->status==1)
+    <!--<div class="layui-form-item">-->
+    <!--    <label class="layui-form-label">安全验证码</label>-->
+    <!--    <div class="layui-input-inline">-->
+    <!--        <input type="text" name="verificationcode" placeholder="" autocomplete="off" class="layui-input">-->
+    <!--    </div>-->
+    <!--    <button type="button" class="layui-btn layui-btn-primary" id="get_code">获取验证码</button>-->
+    <!--</div>-->
+    @endif
+    <input type="hidden" name="id" value="">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <input type="hidden" name='id' value='{{$wallet_out->id}}'>
+            @if($wallet_out->status==1)
+            <button class="layui-btn" lay-submit="" lay-filter="demo1" name='method' value="done">确认提币</button>
+            <button class="layui-btn layui-btn-danger" lay-submit="" lay-filter="demo2">退回申请</button>
+            @endif
         </div>
-    </form>
+    </div>
+</form>
 
 @endsection
 
