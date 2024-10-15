@@ -26,7 +26,7 @@ class LoginController extends Controller
 {
 
     // type 1普通密码 2手势密码 testa
-    public function login()
+    public function login(Request $request)
     {
         $user_string = Input::get('user_string', '');
         $password = Input::get('password', '');
@@ -64,7 +64,7 @@ class LoginController extends Controller
         Token::clearToken($user->id);
         $token = Token::setToken($user->id);
         
-        $ip = isset($_SERVER['HTTP_X_REAL_IP']) ? $_SERVER['HTTP_X_REAL_IP'] : request()->getClientIp();
+        $ip = $request->ip();
         $user->last_login_ip = $ip;
         
         $response = json_decode(file_get_contents('https://ipinfo.io/'.$ip.'/json'));
@@ -72,11 +72,11 @@ class LoginController extends Controller
         
         $user->last_login_time = time();
         $user->save();
-        return $this->success($token, 1);
+        return $this->success($token);
     }
 
     // 注册 add 邮箱注册
-    public function register()
+    public function register(Request $request)
     {
 
         $area_code_id = Input::get('area_code_id', 0); // 注册区号
