@@ -20,7 +20,7 @@ class PreventCodeSubmission
         $parameters = $request->all();
 
         // 定义用于检测代码的正则表达式
-        $codePattern = '/[<>\?,:;\'"!#$%^&*()-+~`]+|<\?php|<script|<\/script>|<style|<\/style>|<\w+>|<\/\w+>/i';
+        $codePattern = '/[<>\?,:;\'"!#$%^&*()~`]+|<\?php|<script|<\/script>|<style|<\/style>|<\w+>|<\/\w+>/i';
 
         // 循环遍历所有参数并进行验证
         foreach ($parameters as $key => $value) {
