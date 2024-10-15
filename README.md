@@ -90,3 +90,10 @@ php artisan schedule:run -->
 
 管理后台：/manage 账号：admin 密码：123456
 代理后台：/agent 账号：admin 密码：123456
+
+start.sh
+#! /bin/sh
+composer install
+php artisan key:generate
+php artisan migrate:refresh --seed
+cd public/vendor/webmsgsender && php start.php start -d

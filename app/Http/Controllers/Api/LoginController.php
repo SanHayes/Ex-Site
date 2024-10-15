@@ -84,19 +84,18 @@ class LoginController extends Controller
         $type = Input::get('type', '');
         $user_string = Input::get('user_string', null);
         $password = Input::get('password', '');
-        // $re_password = Input::get('re_password', ''); || empty($re_password)
+        $re_password = Input::get('re_password', '');
         $code = Input::get('code', '');
         if (empty($type) || empty($user_string) || empty($password)) {
             return $this->error('参数错误');
         }
         $extension_code = Input::get('extension_code', '');
-        // if ($password != $re_password) {
-        //     return $this->error('两次密码不一致');
-        // }
+        if ($password != $re_password) {
+            return $this->error('两次密码不一致');
+        }
         if (mb_strlen($password) < 6 || mb_strlen($password) > 16) {
             return $this->error('密码只能在6-16位之间');
         }
-        
             
         $payPassword = Input::get('pay_password', '');
         if ($payPassword) {
@@ -117,14 +116,9 @@ class LoginController extends Controller
         
         $code_string = session('code');
         
-        // if ($code != '9188') {
-            // if (empty($code) || ($code != $code_string)) {
-               // return $this->error('验证码不正确');
-            // }
-        // }
         // 2021-09-09  修改为 根据后台开关  验证邀请码是否必填
         $sharar_radio = DB::table('settings')->where('key','sharar_radio')->first();
-        // dump($sharar_radio);die;
+
         if($sharar_radio->value == 1 && empty($extension_code)){
             
             return $this->error("请填写正确的邀请码");
@@ -171,7 +165,7 @@ class LoginController extends Controller
             
             $users->save(); // 保存到user表中
             $test = UsersWallet::makeWallet($users->id);
-            // DB::rollBack();
+
             //创建bank账号
             LhBankAccount::newAccount($users->id,$parent_id);
             // return $this->error('File:');
