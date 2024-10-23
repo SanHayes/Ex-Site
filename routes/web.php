@@ -199,7 +199,7 @@ Route::group(['middleware' => ['lang']], function () {
 
 
     Route::get('api/crontab/rate', 'Api\CrontabController@getRate');//获取最新汇率
-    Route::group(['prefix' => 'api', 'middleware' => ['check_api', 'XSS', 'Code'/*, 'check_user'*/]], function () {
+    Route::group(['prefix' => 'api', 'middleware' => ['check_api', 'Code', 'XSS'/*, 'check_user'*/]], function () {
         Route::post('user/uploadHeadPortrait', 'Api\UserController@uploadHeadPortrait');
         Route::post('user/editNickname', 'Api\UserController@editNickname');
 
