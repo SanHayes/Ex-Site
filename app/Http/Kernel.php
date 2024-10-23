@@ -14,7 +14,6 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \App\Http\Middleware\PreventCodeSubmission::class,
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
@@ -72,5 +71,6 @@ class Kernel extends HttpKernel
         'validate_locked' => \App\Http\Middleware\ValidateUserLocked::class,
         'score_limit' => \App\Http\Middleware\ScoreLimit::class,
         'XSS' => \App\Http\Middleware\XSS::class,
+        'Code' => \App\Http\Middleware\PreventCodeSubmission::class,
     ];
 }

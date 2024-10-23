@@ -30,6 +30,9 @@ yum install elasticsearch -y
 php artisan storage:link
 ### 清理缓存
 php artisan config:cache
+### 创建软链接
+php artisan storage:link
+
 ### 伪静态
 location / {
     try_files $uri $uri/ /index.php?$query_string;

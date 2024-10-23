@@ -20,15 +20,13 @@ class PreventCodeSubmission
         $parameters = $request->all();
 
         // 定义用于检测代码的正则表达式
-        $codePattern = '/[<>\?,:;\'"!#$%^&*()~`]+|<\?php|<script|<\/script>|<style|<\/style>|<\w+>|<\/\w+>/i';
+        $codePattern = '/[<>$()&*#]+|<\?php|<script|<\/script>|<style|<\/style>|<\w+>|<\/\w+>/i';
 
         // 循环遍历所有参数并进行验证
         foreach ($parameters as $key => $value) {
             // 检查参数是否匹配正则表达式（即是否包含代码）
             if (preg_match($codePattern, $value)) {
-                return response()->json([
-                    'INVALID INPUT' => "PARAMETER CONTAINS FORBIDDEN CODE!",
-                ], 400);
+                return response()->json(['type' => 'error', 'message' => 'PARAMETER CONTAINS FORBIDDEN CODE!']);
             }
         }
 
