@@ -40,7 +40,6 @@ class CheckApi
         // echo $user_id;
         // $request->attributes->add(['user_id' => $user_id]);//添加参数
         // session(['user_id' => $user_id]);
-        return $next($request)->header('Access-Control-Allow-Origin', '*')
-            ->header('Access-Control-Allow-Credentials', 'true');
+        return $next($request);
     }
 }
