@@ -49,6 +49,8 @@ location ~/(wss|socket.io) {
 	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_set_header Host $host;
 }
+### 数据库huobi_symbols添加XAUT
+INSERT INTO `huobi_symbols` (`id`, `base-currency`, `quote-currency`, `price-precision`, `amount-precision`, `symbol-partition`, `symbol`) VALUES (NULL, 'xaut', 'usdt', '4', '4', 'main', 'xautusdt')
 ### 添加计划任务
 然后添加计划任务
 每天 00:01
