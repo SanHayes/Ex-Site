@@ -17,12 +17,14 @@ class LHDisptchInterest extends Command
 	public function handle()
 	{
 	    echo '锁仓派息任务开始运行' . PHP_EOL;
-		$res = LhDepositOrder::where([
-            'status' => 1,
-        ])->where('start_at','<',date("Y-m-d"))
-          ->where('last_settle_time','<',date("Y-m-d"))
-            ->orWhere('last_settle_time',null)
-          ->take(500) ->get();
+		$res = LhDepositOrder::where('status', 1)
+            ->where(function ($query) {
+                $query->where('start_at', '<', date("Y-m-d"))
+                      ->where('last_settle_time', '<', date("Y-m-d"))
+                      ->orWhere('last_settle_time', null);
+            })
+            ->take(500)
+            ->get();
         $this->comment("start");
         foreach($res as $order){
             LhDepositOrder::dispatchInterest($order->id);
