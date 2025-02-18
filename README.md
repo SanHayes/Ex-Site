@@ -69,18 +69,56 @@ cd /www/wwwroot/Site
 php artisan follow
 
 n分钟 30分钟
-
-1.elasticsearch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### 1.elasticsearch
 service elasticsearch start
+开机自启
+sudo systemctl enable elasticsearch
+关闭自启
+sudo systemctl disable elasticsearch
 
-2.webmsgsender
-cd /www/wwwroot/Site/public/vendor/webmsgsender
-php start.php restart
+### 2.webmsgsender
+sudo vi /etc/systemd/system/webmsgsender-client.service
+-----------------------------------------------------------------
+[Unit]
+Description=WebMsgSender Client Restart
+After=network.target
 
-3.websocket
-cd /www/wwwroot/Site
-php artisan websocket:client restart
+[Service]
+Type=simple
+WorkingDirectory=/www/wwwroot/site.com
+ExecStart=php /www/wwwroot/Ex-Site/public/vendor/webmsgsender/start.php restart
+Restart=always
+User=root
+Group=root
+TimeoutSec=30
 
+[Install]
+WantedBy=multi-user.target
+------------------------------------------------------------------
+sudo systemctl restart webmsgsender-client.service
+
+### 3.websocket
+sudo vi /etc/systemd/system/websocket-client.service
+-------------------------------------------------------------------
+[Unit]
+Description=Laravel WebSocket Client Restart
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/www/wwwroot/Ex-Site
+ExecStart=php /www/wwwroot/Ex-Site/artisan websocket:client restart
+Restart=always
+User=root
+Group=root
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target
+------------------------------------------------------------------
+sudo systemctl restart websocket-client.service
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 <!-- robot
 cd /www/wwwroot/Site
 php artisan robot 4
