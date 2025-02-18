@@ -86,7 +86,7 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/www/wwwroot/site.com
+WorkingDirectory=/www/wwwroot/Ex-Site
 ExecStart=php /www/wwwroot/Ex-Site/public/vendor/webmsgsender/start.php restart
 Restart=always
 User=root
