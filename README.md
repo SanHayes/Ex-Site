@@ -95,7 +95,9 @@ Group=root
 [Install]
 WantedBy=multi-user.target
 ------------------------------------------------------------------
+sudo systemctl daemon-reload
 sudo systemctl restart webmsgsender-client.service
+sudo systemctl status webmsgsender-client.service
 
 ### 3.websocket
 sudo vi /etc/systemd/system/websocket-client.service
@@ -116,7 +118,9 @@ Group=root
 [Install]
 WantedBy=multi-user.target
 ------------------------------------------------------------------
+sudo systemctl daemon-reload
 sudo systemctl restart websocket-client.service
+sudo systemctl status websocket-client.service
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 <!-- robot
 cd /www/wwwroot/Site
