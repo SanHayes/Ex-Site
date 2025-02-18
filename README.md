@@ -81,17 +81,16 @@ sudo systemctl disable elasticsearch
 sudo vi /etc/systemd/system/webmsgsender-client.service
 -----------------------------------------------------------------
 [Unit]
-Description=WebMsgSender Client Restart
+Description=Web Message Sender Client
 After=network.target
 
 [Service]
-Type=simple
+ExecStart=/usr/bin/php /www/wwwroot/Ex-Site/public/vendor/webmsgsender/start.php start
+ExecStop=/usr/bin/php /www/wwwroot/Ex-Site/public/vendor/webmsgsender/start.php stop
 WorkingDirectory=/www/wwwroot/Ex-Site
-ExecStart=php /www/wwwroot/Ex-Site/public/vendor/webmsgsender/start.php restart
-Restart=always
+Restart=on-failure
 User=root
 Group=root
-TimeoutSec=30
 
 [Install]
 WantedBy=multi-user.target
@@ -108,11 +107,11 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/www/wwwroot/Ex-Site
-ExecStart=php /www/wwwroot/Ex-Site/artisan websocket:client restart
-Restart=always
+ExecStart=/usr/bin/php /www/wwwroot/Ex-Site/artisan websocket:client start
+ExecStop=/usr/bin/php /www/wwwroot/Ex-Site/artisan websocket:client stop
+Restart=on-failure
 User=root
 Group=root
-TimeoutSec=30
 
 [Install]
 WantedBy=multi-user.target
