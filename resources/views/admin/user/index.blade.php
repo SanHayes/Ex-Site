@@ -246,6 +246,7 @@
                     ,type: 2
                     ,content: '/admin/user/users_wallet?id=' + data.id
                     ,maxmin: true
+                    ,area:["100%", "100%"],
                 });
                 layer.full(index);
             } else if (layEvent == 'candy_change') {
