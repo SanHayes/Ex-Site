@@ -94,8 +94,8 @@ Group=root
 WantedBy=multi-user.target
 ------------------------------------------------------------------
 sudo systemctl daemon-reload
-sudo systemctl restart webmsgsender-client.service
 sudo systemctl enable webmsgsender-client.service
+sudo systemctl restart webmsgsender-client.service
 sudo systemctl status webmsgsender-client.service
 
 ### 3.websocket
