@@ -77,6 +77,12 @@ sudo systemctl daemon-reloadsudo & systemctl enable webmsgsender-client.service 
 关闭自启
 sudo systemctl disable elasticsearch
 
+sudo systemctl restart websocket-client.service & sudo systemctl restart webmsgsender-client.service
+
+sudo systemctl stop websocket-client.service & sudo systemctl stop webmsgsender-client.service
+
+sudo systemctl status websocket-client.service & sudo systemctl status webmsgsender-client.service
+
 ### 2.webmsgsender
 sudo vi /etc/systemd/system/webmsgsender-client.service
 -----------------------------------------------------------------
