@@ -31,7 +31,18 @@ class Controller extends BaseController
      */
     public function error($message)
     {
-        $lang_arr = ['kr' => 'kor', 'hk' => 'cht', 'jp' => 'jp', 'en' => 'en', 'spa' => 'spa', 'th'=>'th', 'zh'=>'zh'];
+        $lang_arr = [
+            'zh' => 'zh',
+            'hk' => 'cht',
+            'en' => 'en',
+            'jp' => 'jp',
+            'kr' => 'kor',
+            'th' => 'th',
+            'fra' => 'fra',
+            'spa' => 'spa',
+            'de' => 'de',
+            'yi' => 'yi'
+        ];
         $lang = key_exists($this->language, $lang_arr) ? $lang_arr[$this->language] : 'en';
         
         if (is_string($message)){
@@ -51,7 +62,18 @@ class Controller extends BaseController
      */
     public function success($message,$type=0)
     {
-        $lang_arr = ['kr' => 'kor', 'hk' => 'cht', 'jp' => 'jp', 'en' => 'en', 'spa' => 'spa', 'th'=>'th', 'zh'=>'zh'];
+        $lang_arr = [
+            'zh' => 'zh',
+            'hk' => 'cht',
+            'en' => 'en',
+            'jp' => 'jp',
+            'kr' => 'kor',
+            'th' => 'th',
+            'fra' => 'fra',
+            'spa' => 'spa',
+            'de' => 'de',
+            'yi' => 'yi'
+        ];
         $lang = key_exists($this->language, $lang_arr) ? $lang_arr[$this->language] : 'en';
 
         if (is_string($message)&&$type==0){
