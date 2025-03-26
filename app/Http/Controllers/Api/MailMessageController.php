@@ -59,8 +59,8 @@ class MailMessageController extends Controller
                 $mailMessageUserLog -> create_time = time();
                 $mailMessageUserLog -> status = 1;
                 $mailMessageUserLog -> save();
-                $send = ['type' => 'mail_message', 'period' => true];
-                UserChat::sendChat($send);
+                // $send = ['type' => 'mail_message', 'period' => true];
+                // UserChat::sendChat($send);
             }
             return $this->success($userreal);
         } catch (\Exception $ex) {
