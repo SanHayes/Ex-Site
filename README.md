@@ -54,16 +54,16 @@ INSERT INTO `huobi_symbols` (`id`, `base-currency`, `quote-currency`, `price-pre
 每天 00:01
 
 理财结算
-cd /www/wwwroot/Site
+cd /www/wwwroot/Ex-Site
 php artisan auto_dual_order
 
 锁仓派息
-cd /www/wwwroot/Site
+cd /www/wwwroot/Ex-Site
 php artisan lhdispatch_interest
 
 每分钟一次
 处理跟单
-cd /www/wwwroot/Site
+cd /www/wwwroot/Ex-Site
 php artisan follow
 
 n分钟 30分钟
