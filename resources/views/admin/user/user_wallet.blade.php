@@ -142,6 +142,7 @@
                                     , type: 2
                                     , content: '{{url('/admin/user/conf')}}?id=' + data.id
                                     , maxmin: true
+                                    , area:["100%", "100%"]
                                 });
                                 layer.full(index);
                             } else if (layEvent === 'edit') { //编辑
@@ -150,6 +151,7 @@
                                     , type: 2
                                     , content: '{{url('/admin/user/address')}}?id=' + data.id
                                     , maxmin: true
+                                    , area:["100%", "100%"]
                                 });
                                 layer.full(index);
                             } else if (layEvent === 'balance') { //余额归拢
