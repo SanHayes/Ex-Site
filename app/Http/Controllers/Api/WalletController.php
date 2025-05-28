@@ -558,6 +558,7 @@ class WalletController extends Controller
                 DB::rollBack();
                 return $this->error('余额不足');
             }
+            $real_number = $number  - $rate;
             $walletOut = new UsersWalletOut();
             $walletOut->type = $type;
             $walletOut->user_id = $user_id;
@@ -566,7 +567,7 @@ class WalletController extends Controller
             $walletOut->address = $address;
             $walletOut->user_name = $user_name;
             $walletOut->rate = $rate;
-            $walletOut->real_number = $number  - $rate;
+            $walletOut->real_number = $real_number;
             $walletOut->create_time = time();
             $walletOut->status = 1;
             $walletOut->save();
