@@ -137,15 +137,14 @@ class LoginController extends Controller
         $users->password = Users::MakePassword($password);
         $users->parent_id = $parent_id;
         $users->account_number = $user_string;
+        $users->email = $user_string;
+        $users->phone = $user_string;
         $users->area_code_id = $area_code_id;
         $users->area_code = $area_code;
         if ($type == "mobile") {
             $users->reg_type=1;
-            $users->phone = empty($user_string)?null:$user_string;
         } else {
             $users->reg_type=0;
-            $users->email = $user_string;
-            $users->phone = null;
         }
 
         // 后台设置用户默认头像
