@@ -348,7 +348,7 @@ class WalletController extends Controller
             Db::table('charge_req')->insert($data);
             $message = "🎉🎉🎉<b>充值通知：</b>\n<b>会员账号：</b>{$user_id} [{$nick_name}]\n<b>充值金额：</b>{$amount} {$currency->name}\n<b>赠送金额：</b>{$give} {$currency->name}\n<b>充值地址：</b>{$address}";
         }
-        TelegramService::sendMessage($message);
+        // TelegramService::sendMessage($message);
         return $this->success('申请成功');
 	}
 
@@ -546,6 +546,11 @@ class WalletController extends Controller
         if ($number < $currencyInfo->min_number) {
             return $this->error('数量不能少于最小值');
         }
+        if($currencyInfo->ratetype){
+            $rate = $number * $currencyInfo->rate;
+        }else{
+            $rate = $currencyInfo->rate;
+        }
         $user_name = $user['email'];
         if (empty($user_name)) {
             $user_name =  $user['phone'];
@@ -583,7 +588,7 @@ class WalletController extends Controller
             }
             DB::commit();
             $message = "❗️❗️❗️<b>提款通知：</b>\n<b>会员账号：</b>{$user_id} [{$user_name}]\n<b>提款金额：</b>{$number} {$currencyInfo->name}\n<b>手续费：</b>{$rate} {$currencyInfo->name}\n<b>到账金额：</b>{$real_number} {$currencyInfo->name}\n<b>提款地址：</b>{$address}\n";
-            TelegramService::sendMessage($message);
+            // TelegramService::sendMessage($message);
             return $this->success('提币申请已成功，等待审核');
         } catch (\Exception $ex) {
             DB::rollBack();

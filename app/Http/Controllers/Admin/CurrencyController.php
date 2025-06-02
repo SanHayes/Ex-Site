@@ -74,6 +74,7 @@ class CurrencyController extends Controller
         $min_number = $request->get('min_number',0);
         $max_number = $request->get('max_number', 0);
         $rate = $request->get('rate', 0) ?? 0;
+        $ratetype = $request->get('ratetype', 0) ?? 0;
         $rmb_relation = $request->get('rmb_relation', 0) ?? 0;
         //$total_account = $request->get('total_account', '') ?? '';
         $micro_trade_fee = $request->get('micro_trade_fee', 0)??0;
@@ -148,6 +149,7 @@ class CurrencyController extends Controller
             $currency->max_number = $max_number;
             $currency->micro_holdtrade_max = $micro_holdtrade_max;
             $currency->rate = $rate;
+            $currency->ratetype = $ratetype;
             $currency->price = $price;
             $currency->micro_min = $micro_min;
             $currency->micro_max = $micro_max;
@@ -550,8 +552,8 @@ class CurrencyController extends Controller
         $fluctuate_min = $request->input('fluctuate_min', 0);
         $fluctuate_max = $request->input('fluctuate_max', 0);
         $risk_group_result = $request->input('risk_group_result', 0);
-	$sort = $request->input('sort', 0);
         $cate = $request->input('category');
+        $sort = $request->input('sort', 0);
         $min = $request->input('min',0);
         $currency_match = CurrencyMatch::find($id);
         if (!$currency_match) {
@@ -572,11 +574,11 @@ class CurrencyController extends Controller
             'fluctuate_max' => $fluctuate_max,
             'risk_group_result' => $risk_group_result,
             'spread' => $spread,
+            'sort' => $sort,
             'overnight' => $overnight,
             'lever_min_share' => $lever_min_share,
             'lever_max_share' => $lever_max_share,
             'category' => $cate,
-	    'sort' => $sort,
             'min' => $min,
             'create_time' => time(),
             'coin_trade_success' => $coin_trade_success,

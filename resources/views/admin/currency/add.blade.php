@@ -115,6 +115,16 @@
                         </div>
                     </div>
                     <div class="layui-form-item">
+                        <label class="layui-form-label">费率类型</label>
+                        <div class="layui-input-block">
+                            <div class="layui-input-inline">
+                                <input type="radio" name="ratetype" value="1" title="百分比" @if (isset($result->ratetype)) {{$result->ratetype == 1 ? 'checked' : ''}} @endif >
+                                <input type="radio" name="ratetype" value="0" title="固定" @if (isset($result->ratetype)) {{$result->ratetype == 0 ? 'checked' : ''}} @else checked @endif >
+                            </div>
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">百分比:0.01 = 1%, 固定:0.01 = 0.01</div>
+                    </div>
+                    <div class="layui-form-item">
                         <label class="layui-form-label">提币费率</label>
                         <div class="layui-input-inline">
                             <input type="number" class="layui-input" id="end_time" name="rate" value="{{$result->rate}}" placeholder="百分比">
