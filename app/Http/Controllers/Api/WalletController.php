@@ -471,6 +471,7 @@ class WalletController extends Controller
             'name' => $currencyInfo->name,
             'legal_balance' => $wallet->legal_balance,
             'change_balance' => $wallet->change_balance,
+            'micro_balance' => $wallet->micro_balance
         ];
         return $this->success($data);
     }
