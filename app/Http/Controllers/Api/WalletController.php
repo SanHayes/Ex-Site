@@ -466,6 +466,7 @@ class WalletController extends Controller
         $wallet = UsersWallet::where('user_id', $user_id)->where('currency', $currency_id)->first();
         $data = [
             'rate' => $currencyInfo->rate,
+            'ratetype' => $currencyInfo->ratetype,
             'min_number' => $currencyInfo->min_number,
             'name' => $currencyInfo->name,
             'legal_balance' => $wallet->legal_balance,
