@@ -27,7 +27,7 @@ class Login extends Controller
         $password = Users::MakePassword($password);
         $admin = Admin::where('username', $username)->first();
         if (empty($admin)) {
-            return ['code'=>1,'msg'=>'用户名密码错误'];
+            return ['code'=>1,'msg'=>'用户名错误'];
         } else {
             if ($password != $admin->password) {
                 return ['code'=>1,'msg'=>'用户名密码错误'];
